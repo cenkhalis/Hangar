@@ -1,3 +1,6 @@
+# Runtime data (flight log inbox and archives)
+var/
+
 # Environment
 .env
 .env.*

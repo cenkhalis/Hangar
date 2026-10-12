@@ -2,7 +2,7 @@
 
 COMPOSE := docker compose
 
-.PHONY: help env up up-d down logs build migrate \
+.PHONY: help env up up-d down logs build migrate simulate e2e \
 	test test-backend test-ingest test-frontend \
 	lint lint-backend lint-ingest lint-frontend fmt
 
@@ -29,6 +29,12 @@ build: ## Build all images
 
 migrate: ## Apply Django migrations inside the backend container
 	$(COMPOSE) exec backend python manage.py migrate
+
+simulate: ## Drop simulated flight logs into the inbox (SERIAL=AC-00001 COUNT=3)
+	cd ingest && go run ./cmd/simulate -serial $(or $(SERIAL),AC-00001) -count $(or $(COUNT),3) -out ../var/flight-logs/inbox
+
+e2e: ## End-to-end flight log pipeline check against the compose stack
+	./scripts/e2e.sh
 
 test: test-backend test-ingest test-frontend ## Run all test suites
 

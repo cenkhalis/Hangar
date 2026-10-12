@@ -31,9 +31,11 @@ jobs:
           filters: |
             backend:
               - 'backend/**'
+              - 'contracts/**'
               - '.github/workflows/ci.yml'
             ingest:
               - 'ingest/**'
+              - 'contracts/**'
               - '.github/workflows/ci.yml'
             frontend:
               - 'frontend/**'

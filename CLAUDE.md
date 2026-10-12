@@ -21,13 +21,19 @@ hangar/
 │           ├── views.py
 │           ├── services.py # Core business logic
 │           └── tests/
+├── contracts/              # Cross-service message contracts + golden files (tested by both sides)
+│   └── flight-log/v1/
 ├── ingest/                 # Go flight log ingestion service (CSV/JSON -> Redis)
 │   ├── cmd/
-│   │   └── ingest/
+│   │   ├── ingest/         # Service: polls the inbox and publishes flight logs
+│   │   └── simulate/       # CLI: generates synthetic flight logs
 │   ├── internal/
-│   │   ├── parser/         # Concurrent CSV/JSON parsing
+│   │   ├── inbox/          # Inbox directory claim/archive lifecycle
+│   │   ├── parser/         # Streaming CSV/JSON parsing + SHA-256 log IDs
 │   │   ├── validator/      # Schema and flight data validation
-│   │   └── queue/          # Redis publisher / worker
+│   │   ├── summary/        # Flight summary (takeoff/landing, distance, maxima)
+│   │   ├── pipeline/       # Worker pool: parse -> validate -> summarize -> publish
+│   │   └── queue/          # Redis publisher
 │   ├── go.mod
 │   └── go.sum
 ├── frontend/               # Next.js (App Router), TypeScript
@@ -39,6 +45,8 @@ hangar/
 │   │   └── lib/            # Utilities, API client
 │   ├── package.json
 │   └── tsconfig.json
+├── scripts/                # e2e.sh and other developer scripts
+├── var/                    # Runtime data, git-ignored (var/flight-logs/{inbox,processing,processed,failed})
 ├── docker-compose.yml      # Orchestrates all services, PostgreSQL, and Redis
 ├── Makefile                # Unified developer commands
 └── CLAUDE.md
@@ -105,7 +113,8 @@ ruff format . --check
 ```bash
 cd ingest
 go mod download
-go run cmd/ingest/main.go
+go run ./cmd/ingest                       # needs REDIS_URL and INBOX_DIR
+go run ./cmd/simulate -serial AC-00001 -count 3 -out ../var/flight-logs/inbox
 go test -v -race ./...
 golangci-lint run
 ```
@@ -120,7 +129,17 @@ npx tsc --noEmit
 npm run build
 ```
 
-### 5. CI / GitHub Actions
+### 5. Flight log pipeline
+```bash
+make simulate SERIAL=AC-00001 COUNT=3     # drop simulated logs into var/flight-logs/inbox
+make e2e                                  # full pipeline check against the compose stack
+docker compose logs -f ingest flights-consumer
+```
+Flow: `var/flight-logs/inbox` → Go ingest → Redis stream `hangar:flight-logs:v1` →
+`python manage.py consume_flight_logs` → `flights.services.process_flight_log()`.
+Changing the message format means updating `contracts/flight-log/v1/` and both sides' contract tests.
+
+### 6. CI / GitHub Actions
 The CI pipeline checks:
 - Backend: ruff (lint/format), pytest
 - Ingest: golangci-lint, `go test -race ./...`

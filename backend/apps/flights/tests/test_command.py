@@ -12,9 +12,14 @@ from .conftest import make_payload, stream_fields
 @pytest.mark.django_db(transaction=True)
 def test_once_drains_available_entries(monkeypatch, aircraft, capsys):
     client = fakeredis.FakeRedis(decode_responses=True)
+    client_kwargs = {}
+
+    def from_url(url, **kwargs):
+        client_kwargs.update(kwargs)
+        return client
+
     monkeypatch.setattr(
-        "apps.flights.management.commands.consume_flight_logs.redis.Redis.from_url",
-        lambda *args, **kwargs: client,
+        "apps.flights.management.commands.consume_flight_logs.redis.Redis.from_url", from_url
     )
     client.xadd(consumer_module.STREAM, stream_fields(make_payload()))
 
@@ -22,3 +27,5 @@ def test_once_drains_available_entries(monkeypatch, aircraft, capsys):
 
     assert Flight.objects.count() == 1
     assert "Handled 1 entries." in capsys.readouterr().out
+    # Blocking reads must outlast the server-side BLOCK time, or idle streams time out.
+    assert client_kwargs["socket_timeout"] > consumer_module.ConsumerConfig().block_ms / 1000

@@ -2,6 +2,7 @@ import threading
 
 import fakeredis
 import pytest
+import redis
 
 from apps.flights.consumer import (
     ConsumerConfig,
@@ -153,6 +154,32 @@ def test_run_exits_when_stop_is_set(client):
     thread.join(timeout=5)
 
     assert not thread.is_alive()
+
+
+@pytest.mark.parametrize("error", [redis.TimeoutError, redis.ConnectionError])
+def test_run_survives_redis_outages(client, error):
+    stop = threading.Event()
+    handler = Recorder()
+    consumer = make_consumer(client, handler, reconnect_delay_s=0)
+    client.xadd(STREAM, {"n": "1"})
+    real_xreadgroup = client.xreadgroup
+    calls = []
+
+    def flaky_xreadgroup(*args, **kwargs):
+        calls.append(1)
+        if len(calls) == 1:
+            raise error("socket timed out")
+        if handler.calls:
+            stop.set()
+        return real_xreadgroup(*args, **kwargs)
+
+    client.xreadgroup = flaky_xreadgroup
+    thread = threading.Thread(target=consumer.run, args=(stop,))
+    thread.start()
+    thread.join(timeout=5)
+
+    assert not thread.is_alive()
+    assert len(handler.calls) == 1
 
 
 # --- Flight log handler, end to end through the consumer ------------------------------------

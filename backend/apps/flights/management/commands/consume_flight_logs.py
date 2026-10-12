@@ -27,10 +27,16 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        client = redis.Redis.from_url(settings.REDIS_URL, decode_responses=True)
-        consumer = StreamConsumer(
-            client, _handler, ConsumerConfig(consumer=options["consumer_name"])
+        config = ConsumerConfig(consumer=options["consumer_name"])
+        client = redis.Redis.from_url(
+            settings.REDIS_URL,
+            decode_responses=True,
+            # Blocking XREADGROUP must not hit the socket read timeout (redis-py default: 5 s).
+            socket_timeout=config.block_ms / 1000 + 10,
+            socket_connect_timeout=5,
+            health_check_interval=30,
         )
+        consumer = StreamConsumer(client, _handler, config)
 
         if options["once"]:
             consumer.ensure_group()

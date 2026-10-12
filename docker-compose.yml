@@ -42,6 +42,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hangar}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     depends_on:
@@ -54,13 +55,36 @@ services:
       retries: 10
       start_period: 15s
 
-  ingest:
-    build: ./ingest
+  flights-consumer:
+    build: ./backend
+    command: python manage.py consume_flight_logs
     environment:
+      DJANGO_SETTINGS_MODULE: config.settings.prod
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-change-me}
+      POSTGRES_DB: ${POSTGRES_DB:-hangar}
+      POSTGRES_USER: ${POSTGRES_USER:-hangar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hangar}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
       REDIS_URL: redis://redis:6379/0
     depends_on:
       redis:
         condition: service_healthy
+      backend:
+        condition: service_healthy # backend applies migrations on start
+    restart: unless-stopped
+
+  ingest:
+    build: ./ingest
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      INBOX_DIR: /data/flight-logs
+    volumes:
+      - ./var/flight-logs:/data/flight-logs
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
   frontend:
     build:

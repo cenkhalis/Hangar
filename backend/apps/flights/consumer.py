@@ -64,8 +64,8 @@ class StreamConsumer:
         while not stop.is_set():
             try:
                 self.poll_once()
-            except redis.ConnectionError:
-                logger.exception("Redis connection lost; retrying")
+            except (redis.ConnectionError, redis.TimeoutError):
+                logger.exception("Redis unavailable; retrying")
                 stop.wait(self.config.reconnect_delay_s)
 
     def poll_once(self, *, block_ms: int | None = None) -> int:

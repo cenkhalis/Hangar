@@ -2,7 +2,7 @@
 
 COMPOSE := docker compose
 
-.PHONY: help env up up-d down logs build migrate simulate e2e \
+.PHONY: help env up up-d down logs build migrate simulate e2e e2e-ui schema \
 	test test-backend test-ingest test-frontend \
 	lint lint-backend lint-ingest lint-frontend fmt
 
@@ -32,6 +32,15 @@ migrate: ## Apply Django migrations inside the backend container
 
 simulate: ## Drop simulated flight logs into the inbox (SERIAL=AC-00001 COUNT=3)
 	cd ingest && go run ./cmd/simulate -serial $(or $(SERIAL),AC-00001) -count $(or $(COUNT),3) -out ../var/flight-logs/inbox
+
+schema: ## Regenerate API contracts (OpenAPI, domain error codes) and frontend types
+	cd backend && DJANGO_SECRET_KEY=schema .venv/bin/python manage.py spectacular --validate --fail-on-warn --file ../contracts/openapi/hangar.yaml
+	cd backend && DJANGO_SECRET_KEY=schema .venv/bin/python manage.py export_domain_errors
+	cd frontend && npm run gen:api
+
+e2e-ui: ## Browser end-to-end tests (Playwright) against the compose stack
+	$(COMPOSE) up --build -d --wait
+	cd frontend && npx playwright test
 
 e2e: ## End-to-end flight log pipeline check against the compose stack
 	./scripts/e2e.sh

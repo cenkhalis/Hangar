@@ -126,8 +126,20 @@ npm install
 npm run dev
 npm run lint
 npx tsc --noEmit
+npm test                                  # Vitest + Testing Library, API mocked with MSW
 npm run build
 ```
+Next.js 16 has breaking changes: read `frontend/AGENTS.md` and the bundled docs in
+`frontend/node_modules/next/dist/docs/` before using a Next.js API.
+
+### API contracts
+```bash
+make schema    # regenerate contracts/openapi/hangar.yaml, contracts/errors/domain-errors.json,
+               # and frontend/src/lib/api/schema.d.ts after changing serializers, views or errors
+make e2e-ui    # Playwright browser tests against the compose stack (local only)
+```
+Backend tests fail if the committed contracts are stale; a frontend test fails if a backend
+domain error code has no UI message in `frontend/src/lib/api/errors.ts`.
 
 ### 5. Flight log pipeline
 ```bash

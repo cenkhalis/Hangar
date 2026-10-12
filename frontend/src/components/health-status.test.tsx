@@ -1,59 +1,49 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { http, HttpResponse } from "msw";
+import { describe, expect, it } from "vitest";
 
-import { ApiError, getHealth } from "@/lib/api";
+import { apiUrl, server } from "@/test/msw";
+import { renderWithProviders } from "@/test/render";
 
 import { HealthStatus } from "./health-status";
 
-vi.mock("@/lib/api", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/lib/api")>()),
-  getHealth: vi.fn(),
-}));
-
-const getHealthMock = vi.mocked(getHealth);
-
-function renderWithClient() {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(
-    <QueryClientProvider client={client}>
-      <HealthStatus />
-    </QueryClientProvider>,
-  );
-}
+const healthy = { status: "ok", checks: { database: "ok" } };
+const unavailable = { status: "unavailable", checks: { database: "unavailable" } };
 
 describe("HealthStatus", () => {
-  beforeEach(() => {
-    getHealthMock.mockReset();
-  });
-
   it("shows online when the backend is healthy", async () => {
-    getHealthMock.mockResolvedValue({ status: "ok", checks: { database: "ok" } });
+    server.use(http.get(apiUrl("/api/health/"), () => HttpResponse.json(healthy)));
 
-    renderWithClient();
+    renderWithProviders(<HealthStatus />);
 
     expect(await screen.findByText("Backend online")).toBeInTheDocument();
   });
 
-  it("shows unavailable when the request fails", async () => {
-    getHealthMock.mockRejectedValue(new ApiError(503, "down"));
+  it("shows unavailable when the backend reports 503", async () => {
+    server.use(
+      http.get(apiUrl("/api/health/"), () => HttpResponse.json(unavailable, { status: 503 })),
+    );
 
-    renderWithClient();
+    renderWithProviders(<HealthStatus />);
 
     expect(await screen.findByText("Backend unavailable")).toBeInTheDocument();
   });
 
   it("refetches when Retry is clicked", async () => {
-    getHealthMock
-      .mockRejectedValueOnce(new ApiError(503, "down"))
-      .mockResolvedValueOnce({ status: "ok", checks: { database: "ok" } });
+    let calls = 0;
+    server.use(
+      http.get(apiUrl("/api/health/"), () => {
+        calls += 1;
+        return calls === 1 ? HttpResponse.error() : HttpResponse.json(healthy);
+      }),
+    );
 
-    renderWithClient();
+    renderWithProviders(<HealthStatus />);
     await screen.findByText("Backend unavailable");
     await userEvent.click(screen.getByRole("button", { name: "Retry" }));
 
     expect(await screen.findByText("Backend online")).toBeInTheDocument();
-    expect(getHealthMock).toHaveBeenCalledTimes(2);
+    expect(calls).toBe(2);
   });
 });

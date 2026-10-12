@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.fleet.models import Aircraft
@@ -12,8 +13,10 @@ from .models import (
     WorkOrder,
     WorkOrderItem,
 )
+from .services import DueState
 
 DECIMAL = {"max_digits": 12, "decimal_places": 2}
+DUE_STATES = [state.value for state in DueState]
 
 
 class InspectionIntervalSerializer(serializers.ModelSerializer):
@@ -75,6 +78,7 @@ class WorkOrderItemSerializer(serializers.ModelSerializer):
         model = WorkOrderItem
         fields = ["id", "work_order", "task", "task_code", "status", "completion"]
 
+    @extend_schema_field(serializers.IntegerField(allow_null=True))
     def get_completion(self, obj):
         completion = getattr(obj, "completion", None)
         return completion.pk if completion else None
@@ -170,7 +174,7 @@ class IntervalStatusSerializer(serializers.Serializer):
     used = serializers.DecimalField(**DECIMAL, allow_null=True)
     remaining = serializers.DecimalField(**DECIMAL, allow_null=True)
     percent_used = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
-    state = serializers.CharField()
+    state = serializers.ChoiceField(choices=DUE_STATES)
     due_date = serializers.DateField(allow_null=True)
     due_at_aircraft_hours = serializers.DecimalField(**DECIMAL, allow_null=True)
     due_at_aircraft_cycles = serializers.DecimalField(**DECIMAL, allow_null=True)
@@ -186,14 +190,14 @@ class TaskStatusSerializer(serializers.Serializer):
     task = serializers.IntegerField(source="task.id")
     code = serializers.CharField(source="task.code")
     title = serializers.CharField(source="task.title")
-    state = serializers.CharField()
+    state = serializers.ChoiceField(choices=DUE_STATES)
     last_completion = LastCompletionSerializer(allow_null=True)
     intervals = IntervalStatusSerializer(many=True)
 
 
 class MaintenanceReportSerializer(serializers.Serializer):
     aircraft = serializers.IntegerField(source="aircraft.id")
-    state = serializers.CharField()
+    state = serializers.ChoiceField(choices=DUE_STATES)
     tasks = TaskStatusSerializer(many=True)
 
 
@@ -203,5 +207,5 @@ class DueItemSerializer(serializers.Serializer):
     task = serializers.IntegerField(source="status.task.id")
     code = serializers.CharField(source="status.task.code")
     title = serializers.CharField(source="status.task.title")
-    state = serializers.CharField(source="status.state")
+    state = serializers.ChoiceField(choices=DUE_STATES, source="status.state")
     intervals = IntervalStatusSerializer(source="status.intervals", many=True)

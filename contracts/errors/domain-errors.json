@@ -1,0 +1,62 @@
+{
+  "codes": {
+    "aircraft_retired": [
+      "apps.fleet.exceptions.AircraftRetired"
+    ],
+    "completion_already_voided": [
+      "apps.maintenance.exceptions.CompletionAlreadyVoided"
+    ],
+    "component_installed": [
+      "apps.fleet.exceptions.ComponentInstalled"
+    ],
+    "component_not_installable": [
+      "apps.fleet.exceptions.ComponentNotInstallable"
+    ],
+    "component_not_installed": [
+      "apps.fleet.exceptions.ComponentNotInstalled"
+    ],
+    "duplicate_open_task": [
+      "apps.maintenance.exceptions.DuplicateOpenTask"
+    ],
+    "empty_work_order": [
+      "apps.maintenance.exceptions.EmptyWorkOrder"
+    ],
+    "fleet_error": [
+      "apps.fleet.exceptions.FleetError"
+    ],
+    "flight_log_not_rejected": [
+      "apps.flights.exceptions.FlightLogNotRejected"
+    ],
+    "flights_error": [
+      "apps.flights.exceptions.FlightsError"
+    ],
+    "invalid_timestamp": [
+      "apps.fleet.exceptions.InvalidTimestamp",
+      "apps.maintenance.exceptions.InvalidTimestamp"
+    ],
+    "invalid_usage": [
+      "apps.fleet.exceptions.InvalidUsage"
+    ],
+    "item_not_pending": [
+      "apps.maintenance.exceptions.ItemNotPending"
+    ],
+    "maintenance_error": [
+      "apps.maintenance.exceptions.MaintenanceError"
+    ],
+    "missing_performer": [
+      "apps.maintenance.exceptions.MissingPerformer"
+    ],
+    "missing_reason": [
+      "apps.maintenance.exceptions.MissingReason"
+    ],
+    "position_occupied": [
+      "apps.fleet.exceptions.PositionOccupied"
+    ],
+    "task_not_in_program": [
+      "apps.maintenance.exceptions.TaskNotInProgram"
+    ],
+    "work_order_not_open": [
+      "apps.maintenance.exceptions.WorkOrderNotOpen"
+    ]
+  }
+}

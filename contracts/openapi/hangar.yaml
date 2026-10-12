@@ -1,0 +1,3979 @@
+openapi: 3.0.3
+info:
+  title: HANGAR API
+  version: 0.1.0
+  description: UAV fleet, flight log, and maintenance management.
+paths:
+  /api/fleet/aircraft/:
+    get:
+      operationId: fleet_aircraft_list
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: query
+        name: model
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - grounded
+          - retired
+        description: |-
+          * `active` - Active
+          * `grounded` - Grounded
+          * `retired` - Retired
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAircraftList'
+          description: ''
+    post:
+      operationId: fleet_aircraft_create
+      description: Records with history are retired rather than deleted.
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AircraftRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AircraftRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AircraftRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aircraft'
+          description: ''
+  /api/fleet/aircraft-models/:
+    get:
+      operationId: fleet_aircraft_models_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+          enum:
+          - fixed_wing
+          - multirotor
+          - vtol
+        description: |-
+          * `fixed_wing` - Fixed wing
+          * `multirotor` - Multirotor
+          * `vtol` - VTOL
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAircraftModelList'
+          description: ''
+    post:
+      operationId: fleet_aircraft_models_create
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AircraftModelRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AircraftModelRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AircraftModelRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AircraftModel'
+          description: ''
+  /api/fleet/aircraft-models/{id}/:
+    get:
+      operationId: fleet_aircraft_models_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this aircraft model.
+        required: true
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AircraftModel'
+          description: ''
+    put:
+      operationId: fleet_aircraft_models_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this aircraft model.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AircraftModelRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AircraftModelRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AircraftModelRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AircraftModel'
+          description: ''
+    patch:
+      operationId: fleet_aircraft_models_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this aircraft model.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAircraftModelRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAircraftModelRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAircraftModelRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AircraftModel'
+          description: ''
+    delete:
+      operationId: fleet_aircraft_models_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this aircraft model.
+        required: true
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/fleet/aircraft/{id}/:
+    get:
+      operationId: fleet_aircraft_retrieve
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this aircraft.
+        required: true
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aircraft'
+          description: ''
+    put:
+      operationId: fleet_aircraft_update
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this aircraft.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AircraftRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AircraftRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AircraftRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aircraft'
+          description: ''
+    patch:
+      operationId: fleet_aircraft_partial_update
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this aircraft.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAircraftRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAircraftRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAircraftRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aircraft'
+          description: ''
+  /api/fleet/aircraft/{id}/airworthiness/:
+    get:
+      operationId: fleet_aircraft_airworthiness_retrieve
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this aircraft.
+        required: true
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airworthiness'
+          description: ''
+  /api/fleet/component-types/:
+    get:
+      operationId: fleet_component_types_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+          enum:
+          - airframe
+          - battery
+          - esc
+          - flight_controller
+          - motor
+          - other
+          - payload
+          - propeller
+        description: |-
+          * `motor` - Motor
+          * `propeller` - Propeller
+          * `battery` - Battery
+          * `esc` - ESC
+          * `flight_controller` - Flight controller
+          * `payload` - Payload
+          * `airframe` - Airframe
+          * `other` - Other
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedComponentTypeList'
+          description: ''
+    post:
+      operationId: fleet_component_types_create
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComponentTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComponentTypeRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentType'
+          description: ''
+  /api/fleet/component-types/{id}/:
+    get:
+      operationId: fleet_component_types_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component type.
+        required: true
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentType'
+          description: ''
+    put:
+      operationId: fleet_component_types_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component type.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComponentTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComponentTypeRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentType'
+          description: ''
+    patch:
+      operationId: fleet_component_types_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component type.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentTypeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentTypeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentTypeRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentType'
+          description: ''
+    delete:
+      operationId: fleet_component_types_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component type.
+        required: true
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/fleet/components/:
+    get:
+      operationId: fleet_components_list
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: query
+        name: aircraft
+        schema:
+          type: number
+      - in: query
+        name: component_type
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - in_stock
+          - installed
+          - retired
+        description: |-
+          * `in_stock` - In stock
+          * `installed` - Installed
+          * `retired` - Retired
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedComponentList'
+          description: ''
+    post:
+      operationId: fleet_components_create
+      description: Records with history are retired rather than deleted.
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+  /api/fleet/components/{id}/:
+    get:
+      operationId: fleet_components_retrieve
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+    put:
+      operationId: fleet_components_update
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+    patch:
+      operationId: fleet_components_partial_update
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+  /api/fleet/components/{id}/install/:
+    post:
+      operationId: fleet_components_install_create
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstallComponentInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InstallComponentInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InstallComponentInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+  /api/fleet/components/{id}/installations/:
+    get:
+      operationId: fleet_components_installations_list
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: query
+        name: aircraft
+        schema:
+          type: number
+      - in: query
+        name: component_type
+        schema:
+          type: integer
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - in_stock
+          - installed
+          - retired
+        description: |-
+          * `in_stock` - In stock
+          * `installed` - Installed
+          * `retired` - Retired
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedComponentInstallationList'
+          description: ''
+  /api/fleet/components/{id}/remove/:
+    post:
+      operationId: fleet_components_remove_create
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveComponentInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RemoveComponentInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RemoveComponentInputRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+  /api/fleet/components/{id}/retire/:
+    post:
+      operationId: fleet_components_retire_create
+      description: Records with history are retired rather than deleted.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+  /api/fleet/life-limits/:
+    get:
+      operationId: fleet_life_limits_list
+      parameters:
+      - in: query
+        name: component_type
+        schema:
+          type: integer
+      - in: query
+        name: limit_type
+        schema:
+          type: string
+          enum:
+          - calendar_days
+          - cycles
+          - flight_hours
+        description: |-
+          * `flight_hours` - Flight hours
+          * `cycles` - Cycles
+          * `calendar_days` - Calendar days
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedComponentLifeLimitList'
+          description: ''
+    post:
+      operationId: fleet_life_limits_create
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentLifeLimitRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComponentLifeLimitRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComponentLifeLimitRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentLifeLimit'
+          description: ''
+  /api/fleet/life-limits/{id}/:
+    get:
+      operationId: fleet_life_limits_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component life limit.
+        required: true
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentLifeLimit'
+          description: ''
+    put:
+      operationId: fleet_life_limits_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component life limit.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentLifeLimitRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComponentLifeLimitRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComponentLifeLimitRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentLifeLimit'
+          description: ''
+    patch:
+      operationId: fleet_life_limits_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component life limit.
+        required: true
+      tags:
+      - fleet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentLifeLimitRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentLifeLimitRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentLifeLimitRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentLifeLimit'
+          description: ''
+    delete:
+      operationId: fleet_life_limits_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component life limit.
+        required: true
+      tags:
+      - fleet
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/flights/flights/:
+    get:
+      operationId: flights_flights_list
+      parameters:
+      - in: query
+        name: aircraft
+        schema:
+          type: integer
+      - in: query
+        name: departure_after
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: departure_before
+        schema:
+          type: string
+          format: date-time
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - flights
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFlightList'
+          description: ''
+  /api/flights/flights/{id}/:
+    get:
+      operationId: flights_flights_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this flight.
+        required: true
+      tags:
+      - flights
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
+          description: ''
+  /api/flights/logs/:
+    get:
+      operationId: flights_logs_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: rejection_code
+        schema:
+          type: string
+          enum:
+          - aircraft_retired
+          - overlapping_flight
+          - unknown_aircraft
+        description: |-
+          * `unknown_aircraft` - Unknown aircraft
+          * `aircraft_retired` - Aircraft retired
+          * `overlapping_flight` - Overlapping flight
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - processed
+          - rejected
+        description: |-
+          * `processed` - Processed
+          * `rejected` - Rejected
+      tags:
+      - flights
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFlightLogList'
+          description: ''
+  /api/flights/logs/{id}/:
+    get:
+      operationId: flights_logs_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this flight log.
+        required: true
+      tags:
+      - flights
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightLog'
+          description: ''
+  /api/flights/logs/{id}/reprocess/:
+    post:
+      operationId: flights_logs_reprocess_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this flight log.
+        required: true
+      tags:
+      - flights
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightLog'
+          description: ''
+  /api/health/:
+    get:
+      operationId: health_retrieve
+      tags:
+      - health
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+          description: ''
+  /api/maintenance/aircraft/{id}/status/:
+    get:
+      operationId: maintenance_aircraft_status_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this aircraft.
+        required: true
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceReport'
+          description: ''
+  /api/maintenance/completions/:
+    get:
+      operationId: maintenance_completions_list
+      description: Sign-off history. POST records a historical completion; others
+        come from work orders.
+      parameters:
+      - in: query
+        name: aircraft
+        schema:
+          type: integer
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - historical
+          - work_order
+        description: |-
+          * `work_order` - Work order
+          * `historical` - Historical
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: task
+        schema:
+          type: integer
+      - in: query
+        name: voided
+        schema:
+          type: boolean
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTaskCompletionList'
+          description: ''
+    post:
+      operationId: maintenance_completions_create
+      description: Sign-off history. POST records a historical completion; others
+        come from work orders.
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HistoricalCompletionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HistoricalCompletionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HistoricalCompletionRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCompletion'
+          description: ''
+  /api/maintenance/completions/{id}/:
+    get:
+      operationId: maintenance_completions_retrieve
+      description: Sign-off history. POST records a historical completion; others
+        come from work orders.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this task completion.
+        required: true
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCompletion'
+          description: ''
+  /api/maintenance/completions/{id}/void/:
+    post:
+      operationId: maintenance_completions_void_create
+      description: Sign-off history. POST records a historical completion; others
+        come from work orders.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this task completion.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCompletion'
+          description: ''
+  /api/maintenance/due/:
+    get:
+      operationId: maintenance_due_list
+      description: Tasks due soon or overdue across the fleet. ``?state=overdue&aircraft=1``.
+      parameters:
+      - in: query
+        name: aircraft
+        schema:
+          type: array
+          items:
+            type: integer
+      - in: query
+        name: state
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - due_soon
+            - not_started
+            - ok
+            - overdue
+            - untracked
+        description: Defaults to due_soon and overdue.
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DueItem'
+          description: ''
+  /api/maintenance/intervals/:
+    get:
+      operationId: maintenance_intervals_list
+      parameters:
+      - in: query
+        name: interval_type
+        schema:
+          type: string
+          enum:
+          - calendar_days
+          - cycles
+          - flight_hours
+        description: |-
+          * `flight_hours` - Flight hours
+          * `cycles` - Cycles
+          * `calendar_days` - Calendar days
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: task
+        schema:
+          type: integer
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInspectionIntervalList'
+          description: ''
+    post:
+      operationId: maintenance_intervals_create
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InspectionIntervalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InspectionIntervalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InspectionIntervalRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionInterval'
+          description: ''
+  /api/maintenance/intervals/{id}/:
+    get:
+      operationId: maintenance_intervals_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this inspection interval.
+        required: true
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionInterval'
+          description: ''
+    put:
+      operationId: maintenance_intervals_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this inspection interval.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InspectionIntervalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InspectionIntervalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InspectionIntervalRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionInterval'
+          description: ''
+    patch:
+      operationId: maintenance_intervals_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this inspection interval.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionIntervalRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionIntervalRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInspectionIntervalRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InspectionInterval'
+          description: ''
+    delete:
+      operationId: maintenance_intervals_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this inspection interval.
+        required: true
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/maintenance/programs/:
+    get:
+      operationId: maintenance_programs_list
+      parameters:
+      - in: query
+        name: aircraft_model
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMaintenanceProgramList'
+          description: ''
+    post:
+      operationId: maintenance_programs_create
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceProgramRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaintenanceProgramRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaintenanceProgramRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceProgram'
+          description: ''
+  /api/maintenance/programs/{id}/:
+    get:
+      operationId: maintenance_programs_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintenance program.
+        required: true
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceProgram'
+          description: ''
+    put:
+      operationId: maintenance_programs_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintenance program.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceProgramRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaintenanceProgramRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaintenanceProgramRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceProgram'
+          description: ''
+    patch:
+      operationId: maintenance_programs_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintenance program.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintenanceProgramRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintenanceProgramRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintenanceProgramRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceProgram'
+          description: ''
+    delete:
+      operationId: maintenance_programs_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintenance program.
+        required: true
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/maintenance/tasks/:
+    get:
+      operationId: maintenance_tasks_list
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: program
+        schema:
+          type: integer
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMaintenanceTaskList'
+          description: ''
+    post:
+      operationId: maintenance_tasks_create
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceTaskRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaintenanceTaskRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaintenanceTaskRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceTask'
+          description: ''
+  /api/maintenance/tasks/{id}/:
+    get:
+      operationId: maintenance_tasks_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintenance task.
+        required: true
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceTask'
+          description: ''
+    put:
+      operationId: maintenance_tasks_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintenance task.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceTaskRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaintenanceTaskRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaintenanceTaskRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceTask'
+          description: ''
+    patch:
+      operationId: maintenance_tasks_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintenance task.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintenanceTaskRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintenanceTaskRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMaintenanceTaskRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceTask'
+          description: ''
+    delete:
+      operationId: maintenance_tasks_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this maintenance task.
+        required: true
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/maintenance/work-order-items/{id}/:
+    get:
+      operationId: maintenance_work_order_items_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this work order item.
+        required: true
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrderItem'
+          description: ''
+  /api/maintenance/work-order-items/{id}/sign-off/:
+    post:
+      operationId: maintenance_work_order_items_sign_off_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this work order item.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignOffRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SignOffRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SignOffRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCompletion'
+          description: ''
+  /api/maintenance/work-orders/:
+    get:
+      operationId: maintenance_work_orders_list
+      parameters:
+      - in: query
+        name: aircraft
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - cancelled
+          - completed
+          - open
+        description: |-
+          * `open` - Open
+          * `completed` - Completed
+          * `cancelled` - Cancelled
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWorkOrderList'
+          description: ''
+    post:
+      operationId: maintenance_work_orders_create
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkOrderCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkOrderCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WorkOrderCreateRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+          description: ''
+  /api/maintenance/work-orders/{id}/:
+    get:
+      operationId: maintenance_work_orders_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this work order.
+        required: true
+      tags:
+      - maintenance
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+          description: ''
+    put:
+      operationId: maintenance_work_orders_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this work order.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkOrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkOrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WorkOrderRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+          description: ''
+    patch:
+      operationId: maintenance_work_orders_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this work order.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkOrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkOrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkOrderRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+          description: ''
+  /api/maintenance/work-orders/{id}/cancel/:
+    post:
+      operationId: maintenance_work_orders_cancel_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this work order.
+        required: true
+      tags:
+      - maintenance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkOrder'
+          description: ''
+components:
+  schemas:
+    Aircraft:
+      type: object
+      description: Initial usage may be set on create; afterwards counters change
+        only through services.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        model:
+          type: integer
+        serial_number:
+          type: string
+          maxLength: 100
+        registration:
+          type: string
+          maxLength: 50
+        status:
+          $ref: '#/components/schemas/AircraftStatusEnum'
+        in_service_date:
+          type: string
+          format: date
+          nullable: true
+        flight_hours:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        cycles:
+          type: integer
+          minimum: 0
+      required:
+      - cycles
+      - flight_hours
+      - id
+      - in_service_date
+      - model
+      - registration
+      - serial_number
+      - status
+    AircraftModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        manufacturer:
+          type: string
+          maxLength: 100
+        name:
+          type: string
+          maxLength: 100
+        category:
+          $ref: '#/components/schemas/AircraftModelCategoryEnum'
+      required:
+      - category
+      - id
+      - manufacturer
+      - name
+    AircraftModelCategoryEnum:
+      enum:
+      - fixed_wing
+      - multirotor
+      - vtol
+      type: string
+      description: |-
+        * `fixed_wing` - Fixed wing
+        * `multirotor` - Multirotor
+        * `vtol` - VTOL
+    AircraftModelRequest:
+      type: object
+      properties:
+        manufacturer:
+          type: string
+          minLength: 1
+          maxLength: 100
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        category:
+          $ref: '#/components/schemas/AircraftModelCategoryEnum'
+      required:
+      - category
+      - manufacturer
+      - name
+    AircraftRequest:
+      type: object
+      description: Initial usage may be set on create; afterwards counters change
+        only through services.
+      properties:
+        model:
+          type: integer
+        serial_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        registration:
+          type: string
+          maxLength: 50
+        status:
+          $ref: '#/components/schemas/AircraftStatusEnum'
+        in_service_date:
+          type: string
+          format: date
+          nullable: true
+        flight_hours:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        cycles:
+          type: integer
+          minimum: 0
+      required:
+      - model
+      - serial_number
+    AircraftStatusEnum:
+      enum:
+      - active
+      - grounded
+      - retired
+      type: string
+      description: |-
+        * `active` - Active
+        * `grounded` - Grounded
+        * `retired` - Retired
+    Airworthiness:
+      type: object
+      properties:
+        airworthy:
+          type: boolean
+        state:
+          $ref: '#/components/schemas/LifeStateEnum'
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstalledComponentStatus'
+      required:
+      - airworthy
+      - components
+      - state
+    Component:
+      type: object
+      description: Initial usage may be set on create; afterwards counters change
+        only through services.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        component_type:
+          type: integer
+        serial_number:
+          type: string
+          maxLength: 100
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ComponentStatusEnum'
+          readOnly: true
+        in_service_date:
+          type: string
+          format: date
+          nullable: true
+        flight_hours:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        cycles:
+          type: integer
+          minimum: 0
+        life_status:
+          allOf:
+          - $ref: '#/components/schemas/LifeStatus'
+          readOnly: true
+        current_installation:
+          allOf:
+          - $ref: '#/components/schemas/CurrentInstallation'
+          nullable: true
+          readOnly: true
+      required:
+      - component_type
+      - current_installation
+      - cycles
+      - flight_hours
+      - id
+      - in_service_date
+      - life_status
+      - serial_number
+      - status
+    ComponentInstallation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        component:
+          type: integer
+        aircraft:
+          type: integer
+        position:
+          type: string
+          default: ''
+          maxLength: 50
+        installed_at:
+          type: string
+          format: date-time
+        removed_at:
+          type: string
+          format: date-time
+          nullable: true
+        removal_reason:
+          type: string
+          maxLength: 255
+      required:
+      - aircraft
+      - component
+      - id
+      - installed_at
+      - position
+      - removal_reason
+      - removed_at
+    ComponentLifeLimit:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        component_type:
+          type: integer
+        limit_type:
+          $ref: '#/components/schemas/UsageUnitEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        warning_threshold_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Remaining life (as % of the limit) at which the limit becomes
+            due soon.
+      required:
+      - component_type
+      - id
+      - limit_type
+      - value
+      - warning_threshold_percent
+    ComponentLifeLimitRequest:
+      type: object
+      properties:
+        component_type:
+          type: integer
+        limit_type:
+          $ref: '#/components/schemas/UsageUnitEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        warning_threshold_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Remaining life (as % of the limit) at which the limit becomes
+            due soon.
+      required:
+      - component_type
+      - limit_type
+      - value
+    ComponentRequest:
+      type: object
+      description: Initial usage may be set on create; afterwards counters change
+        only through services.
+      properties:
+        component_type:
+          type: integer
+        serial_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        in_service_date:
+          type: string
+          format: date
+          nullable: true
+        flight_hours:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        cycles:
+          type: integer
+          minimum: 0
+      required:
+      - component_type
+      - serial_number
+    ComponentStatusEnum:
+      enum:
+      - in_stock
+      - installed
+      - retired
+      type: string
+      description: |-
+        * `in_stock` - In stock
+        * `installed` - Installed
+        * `retired` - Retired
+    ComponentType:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        part_number:
+          type: string
+          maxLength: 100
+        name:
+          type: string
+          maxLength: 200
+        category:
+          $ref: '#/components/schemas/ComponentTypeCategoryEnum'
+        life_limits:
+          type: array
+          items:
+            $ref: '#/components/schemas/NestedLifeLimit'
+          readOnly: true
+      required:
+      - category
+      - id
+      - life_limits
+      - name
+      - part_number
+    ComponentTypeCategoryEnum:
+      enum:
+      - motor
+      - propeller
+      - battery
+      - esc
+      - flight_controller
+      - payload
+      - airframe
+      - other
+      type: string
+      description: |-
+        * `motor` - Motor
+        * `propeller` - Propeller
+        * `battery` - Battery
+        * `esc` - ESC
+        * `flight_controller` - Flight controller
+        * `payload` - Payload
+        * `airframe` - Airframe
+        * `other` - Other
+    ComponentTypeRequest:
+      type: object
+      properties:
+        part_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        category:
+          $ref: '#/components/schemas/ComponentTypeCategoryEnum'
+      required:
+      - category
+      - name
+      - part_number
+    CurrentInstallation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        aircraft:
+          type: integer
+        position:
+          type: string
+          maxLength: 50
+        installed_at:
+          type: string
+          format: date-time
+      required:
+      - aircraft
+      - id
+      - installed_at
+      - position
+    DueItem:
+      type: object
+      properties:
+        aircraft:
+          type: integer
+        aircraft_serial:
+          type: string
+        task:
+          type: integer
+        code:
+          type: string
+        title:
+          type: string
+        state:
+          $ref: '#/components/schemas/DueStateEnum'
+        intervals:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntervalStatus'
+      required:
+      - aircraft
+      - aircraft_serial
+      - code
+      - intervals
+      - state
+      - task
+      - title
+    DueStateEnum:
+      enum:
+      - untracked
+      - not_started
+      - ok
+      - due_soon
+      - overdue
+      type: string
+      description: |-
+        * `untracked` - untracked
+        * `not_started` - not_started
+        * `ok` - ok
+        * `due_soon` - due_soon
+        * `overdue` - overdue
+    Flight:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        aircraft:
+          type: integer
+          readOnly: true
+        aircraft_serial:
+          type: string
+          readOnly: true
+        log:
+          type: integer
+          readOnly: true
+        departure_at:
+          type: string
+          format: date-time
+          readOnly: true
+        arrival_at:
+          type: string
+          format: date-time
+          readOnly: true
+        duration_seconds:
+          type: integer
+          readOnly: true
+        cycles:
+          type: integer
+          readOnly: true
+        sample_count:
+          type: integer
+          readOnly: true
+        max_altitude_m:
+          type: number
+          format: double
+          readOnly: true
+        max_speed_mps:
+          type: number
+          format: double
+          readOnly: true
+        distance_m:
+          type: number
+          format: double
+          readOnly: true
+        battery_start_pct:
+          type: number
+          format: double
+          readOnly: true
+        battery_end_pct:
+          type: number
+          format: double
+          readOnly: true
+        start_lat:
+          type: number
+          format: double
+          readOnly: true
+        start_lon:
+          type: number
+          format: double
+          readOnly: true
+        end_lat:
+          type: number
+          format: double
+          readOnly: true
+        end_lon:
+          type: number
+          format: double
+          readOnly: true
+      required:
+      - aircraft
+      - aircraft_serial
+      - arrival_at
+      - battery_end_pct
+      - battery_start_pct
+      - cycles
+      - departure_at
+      - distance_m
+      - duration_seconds
+      - end_lat
+      - end_lon
+      - id
+      - log
+      - max_altitude_m
+      - max_speed_mps
+      - sample_count
+      - start_lat
+      - start_lon
+    FlightLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        log_id:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/FlightLogStatusEnum'
+          readOnly: true
+        rejection_code:
+          allOf:
+          - $ref: '#/components/schemas/RejectionCodeEnum'
+          readOnly: true
+        rejection_detail:
+          type: string
+          readOnly: true
+        source_filename:
+          type: string
+          readOnly: true
+        source_format:
+          type: string
+          readOnly: true
+        schema_version:
+          type: string
+          readOnly: true
+        stream_message_id:
+          type: string
+          readOnly: true
+        received_at:
+          type: string
+          format: date-time
+          readOnly: true
+        processed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        duplicate_count:
+          type: integer
+          readOnly: true
+        last_seen_at:
+          type: string
+          format: date-time
+          readOnly: true
+        flight:
+          type: integer
+          readOnly: true
+        payload:
+          readOnly: true
+      required:
+      - duplicate_count
+      - flight
+      - id
+      - last_seen_at
+      - log_id
+      - payload
+      - processed_at
+      - received_at
+      - rejection_code
+      - rejection_detail
+      - schema_version
+      - source_filename
+      - source_format
+      - status
+      - stream_message_id
+    FlightLogStatusEnum:
+      enum:
+      - processed
+      - rejected
+      type: string
+      description: |-
+        * `processed` - Processed
+        * `rejected` - Rejected
+    Health:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/HealthStateEnum'
+        checks:
+          $ref: '#/components/schemas/HealthChecks'
+      required:
+      - checks
+      - status
+    HealthChecks:
+      type: object
+      properties:
+        database:
+          $ref: '#/components/schemas/HealthStateEnum'
+      required:
+      - database
+    HealthStateEnum:
+      enum:
+      - ok
+      - unavailable
+      type: string
+      description: |-
+        * `ok` - ok
+        * `unavailable` - unavailable
+    HistoricalCompletionRequest:
+      type: object
+      properties:
+        aircraft:
+          type: integer
+        task:
+          type: integer
+        performed_at:
+          type: string
+          format: date-time
+        performed_by:
+          type: string
+          minLength: 1
+          maxLength: 200
+        notes:
+          type: string
+          default: ''
+      required:
+      - aircraft
+      - performed_at
+      - performed_by
+      - task
+    InspectionInterval:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        task:
+          type: integer
+        interval_type:
+          $ref: '#/components/schemas/UsageUnitEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        warning_threshold_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Remaining interval (as % of the interval) at which the task
+            becomes due soon.
+      required:
+      - id
+      - interval_type
+      - task
+      - value
+      - warning_threshold_percent
+    InspectionIntervalRequest:
+      type: object
+      properties:
+        task:
+          type: integer
+        interval_type:
+          $ref: '#/components/schemas/UsageUnitEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        warning_threshold_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Remaining interval (as % of the interval) at which the task
+            becomes due soon.
+      required:
+      - interval_type
+      - task
+      - value
+    InstallComponentInputRequest:
+      type: object
+      properties:
+        aircraft:
+          type: integer
+        position:
+          type: string
+          default: ''
+          maxLength: 50
+        installed_at:
+          type: string
+          format: date-time
+      required:
+      - aircraft
+    InstalledComponentStatus:
+      type: object
+      properties:
+        installation_id:
+          type: integer
+        component:
+          type: integer
+        component_type:
+          type: integer
+        serial_number:
+          type: string
+        position:
+          type: string
+        life_status:
+          $ref: '#/components/schemas/LifeStatus'
+      required:
+      - component
+      - component_type
+      - installation_id
+      - life_status
+      - position
+      - serial_number
+    IntervalStatus:
+      type: object
+      properties:
+        interval_type:
+          type: string
+        interval:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        used:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        remaining:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        percent_used:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        state:
+          $ref: '#/components/schemas/DueStateEnum'
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        due_at_aircraft_hours:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        due_at_aircraft_cycles:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+      required:
+      - due_at_aircraft_cycles
+      - due_at_aircraft_hours
+      - due_date
+      - interval
+      - interval_type
+      - percent_used
+      - remaining
+      - state
+      - used
+    KindEnum:
+      enum:
+      - work_order
+      - historical
+      type: string
+      description: |-
+        * `work_order` - Work order
+        * `historical` - Historical
+    LastCompletion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        performed_at:
+          type: string
+          format: date-time
+        performed_by:
+          type: string
+          maxLength: 200
+      required:
+      - id
+      - kind
+      - performed_at
+      - performed_by
+    LifeStateEnum:
+      enum:
+      - ok
+      - due_soon
+      - expired
+      - not_started
+      - untracked
+      type: string
+      description: |-
+        * `ok` - ok
+        * `due_soon` - due_soon
+        * `expired` - expired
+        * `not_started` - not_started
+        * `untracked` - untracked
+    LifeStatus:
+      type: object
+      properties:
+        state:
+          $ref: '#/components/schemas/LifeStateEnum'
+        limits:
+          type: array
+          items:
+            $ref: '#/components/schemas/LimitStatus'
+      required:
+      - limits
+      - state
+    LimitStatus:
+      type: object
+      properties:
+        limit_type:
+          type: string
+        limit:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        used:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        remaining:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+        percent_used:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          nullable: true
+        state:
+          $ref: '#/components/schemas/LifeStateEnum'
+      required:
+      - limit
+      - limit_type
+      - percent_used
+      - remaining
+      - state
+      - used
+    MaintenanceProgram:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        aircraft_model:
+          type: integer
+        name:
+          type: string
+          maxLength: 200
+        notes:
+          type: string
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/NestedTask'
+          readOnly: true
+      required:
+      - aircraft_model
+      - id
+      - name
+      - notes
+      - tasks
+    MaintenanceProgramRequest:
+      type: object
+      properties:
+        aircraft_model:
+          type: integer
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        notes:
+          type: string
+      required:
+      - aircraft_model
+      - name
+    MaintenanceReport:
+      type: object
+      properties:
+        aircraft:
+          type: integer
+        state:
+          $ref: '#/components/schemas/DueStateEnum'
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskStatus'
+      required:
+      - aircraft
+      - state
+      - tasks
+    MaintenanceTask:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        program:
+          type: integer
+        code:
+          type: string
+          maxLength: 50
+        title:
+          type: string
+          maxLength: 200
+        instructions:
+          type: string
+        is_active:
+          type: boolean
+        intervals:
+          type: array
+          items:
+            $ref: '#/components/schemas/NestedInterval'
+          readOnly: true
+      required:
+      - code
+      - id
+      - instructions
+      - intervals
+      - is_active
+      - program
+      - title
+    MaintenanceTaskRequest:
+      type: object
+      properties:
+        program:
+          type: integer
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        instructions:
+          type: string
+        is_active:
+          type: boolean
+      required:
+      - code
+      - program
+      - title
+    NestedInterval:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        interval_type:
+          $ref: '#/components/schemas/UsageUnitEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        warning_threshold_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Remaining interval (as % of the interval) at which the task
+            becomes due soon.
+      required:
+      - id
+      - interval_type
+      - value
+      - warning_threshold_percent
+    NestedIntervalRequest:
+      type: object
+      properties:
+        interval_type:
+          $ref: '#/components/schemas/UsageUnitEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        warning_threshold_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Remaining interval (as % of the interval) at which the task
+            becomes due soon.
+      required:
+      - interval_type
+      - value
+    NestedLifeLimit:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        limit_type:
+          $ref: '#/components/schemas/UsageUnitEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        warning_threshold_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Remaining life (as % of the limit) at which the limit becomes
+            due soon.
+      required:
+      - id
+      - limit_type
+      - value
+      - warning_threshold_percent
+    NestedLifeLimitRequest:
+      type: object
+      properties:
+        limit_type:
+          $ref: '#/components/schemas/UsageUnitEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        warning_threshold_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Remaining life (as % of the limit) at which the limit becomes
+            due soon.
+      required:
+      - limit_type
+      - value
+    NestedTask:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          maxLength: 50
+        title:
+          type: string
+          maxLength: 200
+        is_active:
+          type: boolean
+        intervals:
+          type: array
+          items:
+            $ref: '#/components/schemas/NestedInterval'
+          readOnly: true
+      required:
+      - code
+      - id
+      - intervals
+      - is_active
+      - title
+    NestedTaskRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        is_active:
+          type: boolean
+      required:
+      - code
+      - title
+    PaginatedAircraftList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Aircraft'
+    PaginatedAircraftModelList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AircraftModel'
+    PaginatedComponentInstallationList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponentInstallation'
+    PaginatedComponentLifeLimitList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponentLifeLimit'
+    PaginatedComponentList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+    PaginatedComponentTypeList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponentType'
+    PaginatedFlightList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flight'
+    PaginatedFlightLogList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlightLog'
+    PaginatedInspectionIntervalList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InspectionInterval'
+    PaginatedMaintenanceProgramList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaintenanceProgram'
+    PaginatedMaintenanceTaskList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaintenanceTask'
+    PaginatedTaskCompletionList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskCompletion'
+    PaginatedWorkOrderList:
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkOrder'
+    PatchedAircraftModelRequest:
+      type: object
+      properties:
+        manufacturer:
+          type: string
+          minLength: 1
+          maxLength: 100
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        category:
+          $ref: '#/components/schemas/AircraftModelCategoryEnum'
+    PatchedAircraftRequest:
+      type: object
+      description: Initial usage may be set on create; afterwards counters change
+        only through services.
+      properties:
+        model:
+          type: integer
+        serial_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        registration:
+          type: string
+          maxLength: 50
+        status:
+          $ref: '#/components/schemas/AircraftStatusEnum'
+        in_service_date:
+          type: string
+          format: date
+          nullable: true
+        flight_hours:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        cycles:
+          type: integer
+          minimum: 0
+    PatchedComponentLifeLimitRequest:
+      type: object
+      properties:
+        component_type:
+          type: integer
+        limit_type:
+          $ref: '#/components/schemas/UsageUnitEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        warning_threshold_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Remaining life (as % of the limit) at which the limit becomes
+            due soon.
+    PatchedComponentRequest:
+      type: object
+      description: Initial usage may be set on create; afterwards counters change
+        only through services.
+      properties:
+        component_type:
+          type: integer
+        serial_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        in_service_date:
+          type: string
+          format: date
+          nullable: true
+        flight_hours:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        cycles:
+          type: integer
+          minimum: 0
+    PatchedComponentTypeRequest:
+      type: object
+      properties:
+        part_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        category:
+          $ref: '#/components/schemas/ComponentTypeCategoryEnum'
+    PatchedInspectionIntervalRequest:
+      type: object
+      properties:
+        task:
+          type: integer
+        interval_type:
+          $ref: '#/components/schemas/UsageUnitEnum'
+        value:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        warning_threshold_percent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          description: Remaining interval (as % of the interval) at which the task
+            becomes due soon.
+    PatchedMaintenanceProgramRequest:
+      type: object
+      properties:
+        aircraft_model:
+          type: integer
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        notes:
+          type: string
+    PatchedMaintenanceTaskRequest:
+      type: object
+      properties:
+        program:
+          type: integer
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        instructions:
+          type: string
+        is_active:
+          type: boolean
+    PatchedWorkOrderRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        notes:
+          type: string
+    ReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - reason
+    RejectionCodeEnum:
+      enum:
+      - unknown_aircraft
+      - aircraft_retired
+      - overlapping_flight
+      type: string
+      description: |-
+        * `unknown_aircraft` - Unknown aircraft
+        * `aircraft_retired` - Aircraft retired
+        * `overlapping_flight` - Overlapping flight
+    RemoveComponentInputRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 255
+        removed_at:
+          type: string
+          format: date-time
+    SignOffRequest:
+      type: object
+      properties:
+        performed_by:
+          type: string
+          minLength: 1
+          maxLength: 200
+        performed_at:
+          type: string
+          format: date-time
+        notes:
+          type: string
+          default: ''
+      required:
+      - performed_by
+    TaskCompletion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        aircraft:
+          type: integer
+          readOnly: true
+        task:
+          type: integer
+          readOnly: true
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/KindEnum'
+          readOnly: true
+        work_order_item:
+          type: integer
+          readOnly: true
+          nullable: true
+        work_order:
+          type: integer
+          readOnly: true
+        performed_at:
+          type: string
+          format: date-time
+          readOnly: true
+        performed_by:
+          type: string
+          readOnly: true
+        notes:
+          type: string
+          readOnly: true
+        voided:
+          type: boolean
+          readOnly: true
+        voided_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        void_reason:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - aircraft
+      - created_at
+      - id
+      - kind
+      - notes
+      - performed_at
+      - performed_by
+      - task
+      - void_reason
+      - voided
+      - voided_at
+      - work_order
+      - work_order_item
+    TaskStatus:
+      type: object
+      properties:
+        task:
+          type: integer
+        code:
+          type: string
+        title:
+          type: string
+        state:
+          $ref: '#/components/schemas/DueStateEnum'
+        last_completion:
+          allOf:
+          - $ref: '#/components/schemas/LastCompletion'
+          nullable: true
+        intervals:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntervalStatus'
+      required:
+      - code
+      - intervals
+      - last_completion
+      - state
+      - task
+      - title
+    UsageUnitEnum:
+      enum:
+      - flight_hours
+      - cycles
+      - calendar_days
+      type: string
+      description: |-
+        * `flight_hours` - Flight hours
+        * `cycles` - Cycles
+        * `calendar_days` - Calendar days
+    WorkOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        aircraft:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        notes:
+          type: string
+        status:
+          allOf:
+          - $ref: '#/components/schemas/WorkOrderStatusEnum'
+          readOnly: true
+        opened_at:
+          type: string
+          format: date-time
+          readOnly: true
+        closed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        cancel_reason:
+          type: string
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkOrderItem'
+          readOnly: true
+      required:
+      - aircraft
+      - cancel_reason
+      - closed_at
+      - id
+      - items
+      - notes
+      - opened_at
+      - status
+      - title
+    WorkOrderCreateRequest:
+      type: object
+      properties:
+        aircraft:
+          type: integer
+        tasks:
+          type: array
+          items:
+            type: integer
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        notes:
+          type: string
+          default: ''
+        opened_at:
+          type: string
+          format: date-time
+      required:
+      - aircraft
+      - tasks
+      - title
+    WorkOrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        work_order:
+          type: integer
+        task:
+          type: integer
+        task_code:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/WorkOrderItemStatusEnum'
+        completion:
+          type: integer
+          nullable: true
+          readOnly: true
+      required:
+      - completion
+      - id
+      - status
+      - task
+      - task_code
+      - work_order
+    WorkOrderItemRequest:
+      type: object
+      properties:
+        work_order:
+          type: integer
+        task:
+          type: integer
+        status:
+          $ref: '#/components/schemas/WorkOrderItemStatusEnum'
+      required:
+      - task
+      - work_order
+    WorkOrderItemStatusEnum:
+      enum:
+      - pending
+      - signed_off
+      - cancelled
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `signed_off` - Signed off
+        * `cancelled` - Cancelled
+    WorkOrderRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        notes:
+          type: string
+      required:
+      - title
+    WorkOrderStatusEnum:
+      enum:
+      - open
+      - completed
+      - cancelled
+      type: string
+      description: |-
+        * `open` - Open
+        * `completed` - Completed
+        * `cancelled` - Cancelled
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

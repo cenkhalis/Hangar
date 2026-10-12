@@ -1,5 +1,6 @@
 from django.db.models import Prefetch
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -48,6 +49,7 @@ class AircraftViewSet(NoDestroyModelViewSet):
     serializer_class = AircraftSerializer
     filterset_fields = ["status", "model"]
 
+    @extend_schema(responses=AirworthinessSerializer)
     @action(detail=True, methods=["get"])
     def airworthiness(self, request, pk=None):
         report = services.get_aircraft_airworthiness(self.get_object(), today=timezone.localdate())
@@ -85,6 +87,7 @@ class ComponentViewSet(NoDestroyModelViewSet):
         component = self.get_queryset().get(pk=pk)
         return Response(self.get_serializer(component).data)
 
+    @extend_schema(request=InstallComponentInputSerializer, responses=ComponentSerializer)
     @action(detail=True, methods=["post"])
     def install(self, request, pk=None):
         component = self.get_object()
@@ -98,6 +101,7 @@ class ComponentViewSet(NoDestroyModelViewSet):
         )
         return self._component_response(component.pk)
 
+    @extend_schema(request=RemoveComponentInputSerializer, responses=ComponentSerializer)
     @action(detail=True, methods=["post"])
     def remove(self, request, pk=None):
         component = self.get_object()
@@ -110,12 +114,14 @@ class ComponentViewSet(NoDestroyModelViewSet):
         )
         return self._component_response(component.pk)
 
+    @extend_schema(request=None, responses=ComponentSerializer)
     @action(detail=True, methods=["post"])
     def retire(self, request, pk=None):
         component = self.get_object()
         services.retire_component(component)
         return self._component_response(component.pk)
 
+    @extend_schema(responses=ComponentInstallationSerializer(many=True))
     @action(detail=True, methods=["get"])
     def installations(self, request, pk=None):
         component = self.get_object()

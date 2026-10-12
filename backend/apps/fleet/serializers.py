@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from . import services
@@ -11,6 +12,8 @@ from .models import (
     ComponentLifeLimit,
     ComponentType,
 )
+
+LIFE_STATES = [state.value for state in services.LifeState]
 
 
 class HoursField(serializers.DecimalField):
@@ -103,11 +106,11 @@ class LimitStatusSerializer(serializers.Serializer):
     used = serializers.DecimalField(max_digits=12, decimal_places=2, allow_null=True)
     remaining = serializers.DecimalField(max_digits=12, decimal_places=2, allow_null=True)
     percent_used = serializers.DecimalField(max_digits=7, decimal_places=2, allow_null=True)
-    state = serializers.CharField()
+    state = serializers.ChoiceField(choices=LIFE_STATES)
 
 
 class LifeStatusSerializer(serializers.Serializer):
-    state = serializers.CharField()
+    state = serializers.ChoiceField(choices=LIFE_STATES)
     limits = LimitStatusSerializer(many=True)
 
 
@@ -136,10 +139,12 @@ class ComponentSerializer(UsageCountersMixin, serializers.ModelSerializer):
         ]
         read_only_fields = ["status"]
 
+    @extend_schema_field(LifeStatusSerializer)
     def get_life_status(self, obj):
         status = services.get_component_life_status(obj, today=self.context["today"])
         return LifeStatusSerializer(status).data
 
+    @extend_schema_field(CurrentInstallationSerializer(allow_null=True))
     def get_current_installation(self, obj):
         # Uses the `open_installations` prefetch from the viewset when available.
         if hasattr(obj, "open_installations"):
@@ -191,5 +196,5 @@ class InstalledComponentStatusSerializer(serializers.Serializer):
 
 class AirworthinessSerializer(serializers.Serializer):
     airworthy = serializers.BooleanField()
-    state = serializers.CharField()
+    state = serializers.ChoiceField(choices=LIFE_STATES)
     components = InstalledComponentStatusSerializer(many=True)

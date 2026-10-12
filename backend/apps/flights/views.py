@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -19,6 +20,7 @@ class FlightLogViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FlightLogSerializer
     filterset_fields = ["status", "rejection_code"]
 
+    @extend_schema(request=None, responses=FlightLogSerializer)
     @action(detail=True, methods=["post"])
     def reprocess(self, request, pk=None):
         result = services.reprocess_flight_log(self.get_object())

@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "django_filters",
+    "drf_spectacular",
     "apps.core",
     "apps.fleet",
     "apps.flights",
@@ -95,6 +96,40 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
     "EXCEPTION_HANDLER": "apps.core.exceptions.exception_handler",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "HANGAR API",
+    "DESCRIPTION": "UAV fleet, flight log, and maintenance management.",
+    "VERSION": "0.1.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # Separate request/response components so read-only and defaulted fields are required in
+    # responses (accurate generated types) but optional in requests.
+    "COMPONENT_SPLIT_REQUEST": True,
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+        "apps.core.schema.require_all_response_fields",
+    ],
+    # Name enums after their field so generated TypeScript types are readable.
+    "ENUM_NAME_OVERRIDES": {
+        "AircraftStatusEnum": "apps.fleet.models.Aircraft.Status",
+        "ComponentStatusEnum": "apps.fleet.models.Component.Status",
+        "WorkOrderStatusEnum": "apps.maintenance.models.WorkOrder.Status",
+        "WorkOrderItemStatusEnum": "apps.maintenance.models.WorkOrderItem.Status",
+        "FlightLogStatusEnum": "apps.flights.models.FlightLog.Status",
+        # Life limits and inspection intervals share the hours/cycles/days choice set.
+        "UsageUnitEnum": "apps.fleet.models.ComponentLifeLimit.LimitType",
+        # Mirrors fleet.services.LifeState / maintenance.services.DueState (settings cannot import
+        # app modules); test_openapi_schema fails if these drift.
+        "LifeStateEnum": [
+            (s, s) for s in ("untracked", "not_started", "ok", "due_soon", "expired")
+        ],
+        "DueStateEnum": [(s, s) for s in ("untracked", "not_started", "ok", "due_soon", "overdue")],
+        "HealthStateEnum": [("ok", "ok"), ("unavailable", "unavailable")],
+        "AircraftModelCategoryEnum": "apps.fleet.models.AircraftModel.Category",
+        "ComponentTypeCategoryEnum": "apps.fleet.models.ComponentType.Category",
+    },
 }
 
 REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")

@@ -1,5 +1,6 @@
 from django.db.models import Prefetch
 from django.utils import timezone
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -71,6 +72,7 @@ class WorkOrderViewSet(
     serializer_class = WorkOrderSerializer
     filterset_fields = ["aircraft", "status"]
 
+    @extend_schema(request=WorkOrderCreateSerializer, responses={201: WorkOrderSerializer})
     def create(self, request, *args, **kwargs):
         data = _validated(WorkOrderCreateSerializer, request.data)
         work_order = services.create_work_order(
@@ -83,6 +85,7 @@ class WorkOrderViewSet(
         body = self.get_serializer(self.get_queryset().get(pk=work_order.pk)).data
         return Response(body, status=status.HTTP_201_CREATED)
 
+    @extend_schema(request=ReasonSerializer, responses=WorkOrderSerializer)
     @action(detail=True, methods=["post"])
     def cancel(self, request, pk=None):
         data = _validated(ReasonSerializer, request.data)
@@ -94,6 +97,7 @@ class WorkOrderItemViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = WorkOrderItem.objects.select_related("task", "completion")
     serializer_class = WorkOrderItemSerializer
 
+    @extend_schema(request=SignOffSerializer, responses=TaskCompletionSerializer)
     @action(detail=True, methods=["post"], url_path="sign-off")
     def sign_off(self, request, pk=None):
         data = _validated(SignOffSerializer, request.data)
@@ -118,6 +122,9 @@ class TaskCompletionViewSet(
     serializer_class = TaskCompletionSerializer
     filterset_class = TaskCompletionFilter
 
+    @extend_schema(
+        request=HistoricalCompletionSerializer, responses={201: TaskCompletionSerializer}
+    )
     def create(self, request, *args, **kwargs):
         data = _validated(HistoricalCompletionSerializer, request.data)
         completion = services.record_historical_completion(
@@ -129,6 +136,7 @@ class TaskCompletionViewSet(
         )
         return Response(self.get_serializer(completion).data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(request=ReasonSerializer, responses=TaskCompletionSerializer)
     @action(detail=True, methods=["post"])
     def void(self, request, pk=None):
         data = _validated(ReasonSerializer, request.data)
@@ -138,6 +146,7 @@ class TaskCompletionViewSet(
 
 class AircraftMaintenanceViewSet(viewsets.GenericViewSet):
     queryset = Aircraft.objects.all()
+    serializer_class = MaintenanceReportSerializer
 
     @action(detail=True, methods=["get"])
     def status(self, request, pk=None):
@@ -150,6 +159,19 @@ class AircraftMaintenanceViewSet(viewsets.GenericViewSet):
 class DueListView(APIView):
     """Tasks due soon or overdue across the fleet. ``?state=overdue&aircraft=1``."""
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "state",
+                str,
+                many=True,
+                enum=[s.value for s in services.DueState],
+                description="Defaults to due_soon and overdue.",
+            ),
+            OpenApiParameter("aircraft", int, many=True),
+        ],
+        responses=DueItemSerializer(many=True),
+    )
     def get(self, request):
         states = request.query_params.getlist("state") or list(services.DEFAULT_DUE_STATES)
         try:

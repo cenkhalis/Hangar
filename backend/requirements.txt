@@ -6,3 +6,4 @@ psycopg[binary]==3.3.6
 gunicorn==26.2.0
 django-filter==26.1
 redis==8.1.0
+drf-spectacular==0.30.0

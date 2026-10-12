@@ -1,5 +1,7 @@
 import { type APIRequestContext, expect, test } from "@playwright/test";
 
+import { runId } from "./run-id";
+
 const API = process.env.E2E_API_URL ?? "http://localhost:8000";
 
 async function post<T = { id: number }>(request: APIRequestContext, path: string, data: object) {
@@ -10,7 +12,7 @@ async function post<T = { id: number }>(request: APIRequestContext, path: string
 
 /** A unique model with one aircraft past a 50 h inspection that has never been signed off. */
 async function seedOverdueAircraft(request: APIRequestContext) {
-  const run = `E2E-${Date.now()}`;
+  const run = runId("E2E");
   const model = await post(request, "/api/fleet/aircraft-models/", {
     manufacturer: "E2E",
     name: run,

@@ -11,7 +11,10 @@ import (
 	"time"
 
 	"github.com/cenkhalis/hangar/ingest/internal/config"
+	"github.com/cenkhalis/hangar/ingest/internal/inbox"
+	"github.com/cenkhalis/hangar/ingest/internal/pipeline"
 	"github.com/cenkhalis/hangar/ingest/internal/queue"
+	"github.com/cenkhalis/hangar/ingest/internal/validator"
 )
 
 const startupPingTimeout = 5 * time.Second
@@ -55,8 +58,25 @@ func run(ctx context.Context, getenv func(string) string, logger *slog.Logger) e
 		return err
 	}
 
-	logger.Info("ingest service started")
-	<-ctx.Done()
+	box, err := inbox.New(cfg.InboxDir, cfg.InboxSettle)
+	if err != nil {
+		return err
+	}
+	validation := validator.DefaultConfig()
+	validation.AirborneAltitudeM = cfg.AirborneAltitudeM
+	runner := &pipeline.Runner{
+		Inbox:        box,
+		Processor:    &pipeline.Processor{Publisher: q, Validator: validation, Now: time.Now},
+		Workers:      cfg.Workers,
+		PollInterval: cfg.PollInterval,
+		FileTimeout:  cfg.ShutdownTimeout,
+		Logger:       logger,
+	}
+
+	logger.Info("ingest service started", "inbox", cfg.InboxDir, "workers", cfg.Workers)
+	if err := runner.Run(ctx); err != nil {
+		return err
+	}
 	logger.Info("shutdown signal received")
 	return nil
 }

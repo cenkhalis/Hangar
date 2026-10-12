@@ -1447,6 +1447,8 @@ export interface operations {
                 model?: number;
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
                 /**
                  * @description * `active` - Active
                  *     * `grounded` - Grounded
@@ -1506,6 +1508,8 @@ export interface operations {
                 category?: "fixed_wing" | "multirotor" | "vtol";
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -1763,6 +1767,8 @@ export interface operations {
                 category?: "airframe" | "battery" | "esc" | "flight_controller" | "motor" | "other" | "payload" | "propeller";
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -1911,6 +1917,8 @@ export interface operations {
                 component_type?: number;
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
                 /**
                  * @description * `in_stock` - In stock
                  *     * `installed` - Installed
@@ -2072,6 +2080,8 @@ export interface operations {
                 component_type?: number;
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
                 /**
                  * @description * `in_stock` - In stock
                  *     * `installed` - Installed
@@ -2160,6 +2170,8 @@ export interface operations {
                 limit_type?: "calendar_days" | "cycles" | "flight_hours";
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -2309,6 +2321,8 @@ export interface operations {
                 departure_before?: string;
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -2353,6 +2367,8 @@ export interface operations {
             query?: {
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
                 /**
                  * @description * `unknown_aircraft` - Unknown aircraft
                  *     * `aircraft_retired` - Aircraft retired
@@ -2477,6 +2493,8 @@ export interface operations {
                 kind?: "historical" | "work_order";
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
                 task?: number;
                 voided?: boolean;
             };
@@ -2605,6 +2623,8 @@ export interface operations {
                 interval_type?: "calendar_days" | "cycles" | "flight_hours";
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
                 task?: number;
             };
             header?: never;
@@ -2753,6 +2773,8 @@ export interface operations {
                 aircraft_model?: number;
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
             };
             header?: never;
             path?: never;
@@ -2900,6 +2922,8 @@ export interface operations {
                 is_active?: boolean;
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
                 program?: number;
             };
             header?: never;
@@ -3098,6 +3122,8 @@ export interface operations {
                 aircraft?: number;
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
                 /**
                  * @description * `open` - Open
                  *     * `completed` - Completed

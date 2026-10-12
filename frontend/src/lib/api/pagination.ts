@@ -1,4 +1,4 @@
-/** DRF PageNumberPagination page size; must match REST_FRAMEWORK["PAGE_SIZE"] in the backend. */
+/** Default page size; must match DEFAULT_PAGE_SIZE in backend/apps/core/pagination.py. */
 export const PAGE_SIZE = 50;
 
 export function pageCount(count: number, pageSize = PAGE_SIZE): number {

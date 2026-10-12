@@ -1348,7 +1348,7 @@ export interface components {
             readonly task_title: string;
             readonly kind: components["schemas"]["KindEnum"];
             readonly work_order_item: number | null;
-            readonly work_order: number;
+            readonly work_order: number | null;
             /** Format: date-time */
             readonly performed_at: string;
             readonly performed_by: string;

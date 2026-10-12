@@ -3770,6 +3770,7 @@ components:
         work_order:
           type: integer
           readOnly: true
+          nullable: true
         performed_at:
           type: string
           format: date-time

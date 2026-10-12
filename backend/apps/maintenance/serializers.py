@@ -135,7 +135,7 @@ class TaskCompletionSerializer(serializers.ModelSerializer):
     task_title = serializers.CharField(source="task.title", read_only=True)
     voided = serializers.SerializerMethodField()
     work_order = serializers.IntegerField(
-        source="work_order_item.work_order_id", read_only=True, default=None
+        source="work_order_item.work_order_id", read_only=True, default=None, allow_null=True
     )
 
     class Meta:

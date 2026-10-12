@@ -92,7 +92,7 @@ docker compose down
 cd backend
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt  # requirements.txt holds runtime deps only
 python manage.py makemigrations
 python manage.py migrate
 pytest

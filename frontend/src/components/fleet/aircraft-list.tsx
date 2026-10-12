@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { createContext, use, useMemo } from "react";
 
 import { columnHelper, DataTable } from "@/components/data-table";
 import { AIRCRAFT_STATUS_LABELS, AircraftStatusBadge } from "@/components/fleet/aircraft-status-badge";
@@ -28,7 +28,14 @@ const toId = (value: string | null) => (value && /^\d+$/.test(value) ? Number(va
 
 type DueBadgeState = { loading: boolean; byAircraft: Map<number, DueState> };
 
-function MaintenanceCell({ aircraft, due }: { aircraft: Aircraft; due: DueBadgeState }) {
+/**
+ * Due states reach the cells through context so the columns stay static: new column definitions
+ * remount every cell, which would drop a click on a serial link while the due list loads.
+ */
+const DueStates = createContext<DueBadgeState>({ loading: false, byAircraft: new Map() });
+
+function MaintenanceCell({ aircraft }: { aircraft: Aircraft }) {
+  const due = use(DueStates);
   // The due list leaves out retired aircraft.
   if (aircraft.status === "retired") return <span className="text-muted-foreground">—</span>;
   if (due.loading) return <Skeleton className="h-5 w-20" />;
@@ -42,8 +49,7 @@ function MaintenanceCell({ aircraft, due }: { aircraft: Aircraft; due: DueBadgeS
 
 const helper = columnHelper<Aircraft>();
 
-function aircraftColumns(due: DueBadgeState) {
-  return helper.columns([
+const columns = helper.columns([
     helper.accessor("serial_number", {
       header: "Serial",
       cell: (info) => (
@@ -63,10 +69,9 @@ function aircraftColumns(due: DueBadgeState) {
     helper.display({
       id: "maintenance",
       header: "Maintenance",
-      cell: (info) => <MaintenanceCell aircraft={info.row.original} due={due} />,
+      cell: (info) => <MaintenanceCell aircraft={info.row.original} />,
     }),
-  ]);
-}
+]);
 
 /** Fleet list with URL filters; uses `useSearchParams`, so render it inside Suspense. */
 export function AircraftList() {
@@ -80,12 +85,11 @@ export function AircraftList() {
   const ids = useMemo(() => aircraft.data?.results.map((a) => a.id) ?? [], [aircraft.data]);
   const due = useDueForAircraft(ids);
 
-  const columns = useMemo(
-    () =>
-      aircraftColumns({
-        loading: due.isPending && ids.length > 0,
-        byAircraft: due.data ? dueStateByAircraft(due.data) : new Map(),
-      }),
+  const dueStates = useMemo(
+    () => ({
+      loading: due.isPending && ids.length > 0,
+      byAircraft: due.data ? dueStateByAircraft(due.data) : new Map<number, DueState>(),
+    }),
     [due.isPending, due.data, ids.length],
   );
 
@@ -111,22 +115,24 @@ export function AircraftList() {
           disabled={models.isPending}
         />
       </div>
-      <DataTable
-        label="Aircraft"
-        columns={columns}
-        data={aircraft.data?.results}
-        isPending={aircraft.isPending}
-        error={aircraft.error}
-        onRetry={() => aircraft.refetch()}
-        emptyMessage={
-          filters.status || filters.model
-            ? "No aircraft match these filters."
-            : "No aircraft yet. Add them in Django admin."
-        }
-        pagination={
-          aircraft.data && { page, count: aircraft.data.count, onPageChange: setPage }
-        }
-      />
+      <DueStates value={dueStates}>
+        <DataTable
+          label="Aircraft"
+          columns={columns}
+          data={aircraft.data?.results}
+          isPending={aircraft.isPending}
+          error={aircraft.error}
+          onRetry={() => aircraft.refetch()}
+          emptyMessage={
+            filters.status || filters.model
+              ? "No aircraft match these filters."
+              : "No aircraft yet. Add them in Django admin."
+          }
+          pagination={
+            aircraft.data && { page, count: aircraft.data.count, onPageChange: setPage }
+          }
+        />
+      </DueStates>
     </div>
   );
 }

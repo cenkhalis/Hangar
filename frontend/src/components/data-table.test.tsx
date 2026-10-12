@@ -89,3 +89,14 @@ describe("DataTable", () => {
     expect(onPageChange.mock.calls).toEqual([[1], [3]]);
   });
 });
+
+describe("DataTable column identity", () => {
+  it("keeps cells mounted across renders with the same columns", () => {
+    const { rerender } = render(<DataTable label="Aircraft" columns={columns} data={rows} />);
+    const cell = screen.getByText("AC-00001");
+
+    rerender(<DataTable label="Aircraft" columns={columns} data={rows} />);
+
+    expect(cell.isConnected).toBe(true);
+  });
+});

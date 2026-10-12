@@ -36,6 +36,11 @@ export const columnHelper = <T extends RowData>() =>
 const SKELETON_ROWS = 5;
 
 type DataTableProps<T extends RowData> = {
+  /**
+   * Keep this stable (module scope, or memoized on values that rarely change): new column
+   * definitions remount every cell, so a click landing during that render is lost. Pass
+   * fast-changing data to cells through context instead.
+   */
   columns: DataTableColumns<T>;
   /** Rows of the current page; `undefined` while the first load is pending. */
   data: T[] | undefined;

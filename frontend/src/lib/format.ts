@@ -27,6 +27,15 @@ export function formatDateTime(iso: string, timeZone?: string): string {
   }).format(new Date(iso));
 }
 
+/** Like `formatDateTime`, to the second, for limits that can fall within a minute. */
+export function formatDateTimeSeconds(iso: string, timeZone?: string): string {
+  return new Intl.DateTimeFormat(LOCALE, {
+    dateStyle: "medium",
+    timeStyle: "medium",
+    timeZone,
+  }).format(new Date(iso));
+}
+
 /** Format a date-only value ("2026-06-30") without shifting it across time zones. */
 export function formatDate(date: string): string {
   return new Intl.DateTimeFormat(LOCALE, { dateStyle: "medium", timeZone: "UTC" }).format(

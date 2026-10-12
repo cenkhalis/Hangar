@@ -132,3 +132,32 @@ export const rejectedLog = (overrides: Partial<Schemas["FlightLog"]> = {}) =>
     flight: null,
     ...overrides,
   });
+
+export const workOrderItem = (
+  overrides: Partial<Schemas["WorkOrderItem"]> = {},
+): Schemas["WorkOrderItem"] => ({
+  id: 7,
+  work_order: 3,
+  task: 10,
+  task_code: "INS-50H",
+  task_title: "50 hour inspection",
+  status: "pending",
+  completion: null,
+  ...overrides,
+});
+
+export const workOrder = (
+  overrides: Partial<Schemas["WorkOrder"]> = {},
+): Schemas["WorkOrder"] => ({
+  id: 3,
+  aircraft: 1,
+  aircraft_serial: "AC-00001",
+  title: "50 h inspection",
+  notes: "",
+  status: "open",
+  opened_at: "2026-10-01T08:00:00Z",
+  closed_at: null,
+  cancel_reason: "",
+  items: [workOrderItem()],
+  ...overrides,
+});

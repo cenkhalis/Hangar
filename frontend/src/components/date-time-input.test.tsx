@@ -25,3 +25,20 @@ describe("DateTimeInput", () => {
     expect(screen.getByLabelText("Opened at")).not.toHaveAttribute("max");
   });
 });
+
+describe("DateTimeInput with seconds", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("steps by one second and caps the picker at the current second", () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 9, 12, 14, 5, 42));
+
+    render(<DateTimeInput aria-label="Performed at" notInFuture withSeconds />);
+
+    const input = screen.getByLabelText("Performed at");
+    expect(input).toHaveAttribute("step", "1");
+    expect(input).toHaveAttribute("max", "2026-10-12T14:05:42");
+  });
+});

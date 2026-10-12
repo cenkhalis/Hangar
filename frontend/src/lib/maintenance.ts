@@ -1,4 +1,10 @@
-import type { DueItem, DueState, IntervalStatus } from "@/lib/api/maintenance";
+import type {
+  DueItem,
+  DueState,
+  IntervalStatus,
+  TaskStatus,
+  WorkOrder,
+} from "@/lib/api/maintenance";
 import { formatDate, formatHours, formatNumber } from "@/lib/format";
 
 const SEVERITY: Record<DueState, number> = {
@@ -38,4 +44,34 @@ export function formatDuePoint(interval: IntervalStatus): string | null {
     return `at ${formatNumber(interval.due_at_aircraft_cycles, 0)} cycles`;
   }
   return null;
+}
+
+/** Tasks already pending on an open work order, mapped to that work order's id. */
+export function pendingTasks(openWorkOrders: WorkOrder[]): Map<number, number> {
+  const pending = new Map<number, number>();
+  for (const workOrder of openWorkOrders) {
+    for (const item of workOrder.items) {
+      if (item.status === "pending") pending.set(item.task, workOrder.id);
+    }
+  }
+  return pending;
+}
+
+const ACTIONABLE_STATES: ReadonlySet<DueState> = new Set(["due_soon", "overdue"]);
+
+/**
+ * Tasks to preselect for a new work order: the requested ones, or else every task due soon or
+ * overdue; tasks already pending on an open work order are never selected.
+ */
+export function defaultTaskSelection(
+  tasks: TaskStatus[],
+  pending: Map<number, number>,
+  requested?: number[],
+): number[] {
+  const available = tasks.filter((t) => !pending.has(t.task));
+  if (requested) {
+    const wanted = new Set(requested);
+    return available.filter((t) => wanted.has(t.task)).map((t) => t.task);
+  }
+  return available.filter((t) => ACTIONABLE_STATES.has(t.state)).map((t) => t.task);
 }

@@ -1,4 +1,12 @@
-import { LayoutDashboard, type LucideIcon, Plane, PlaneTakeoff, ScrollText } from "lucide-react";
+import {
+  ClipboardList,
+  LayoutDashboard,
+  type LucideIcon,
+  Plane,
+  PlaneTakeoff,
+  ScrollText,
+  Wrench,
+} from "lucide-react";
 
 export type NavItem = { href: string; label: string; icon: LucideIcon };
 
@@ -8,6 +16,8 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/aircraft", label: "Aircraft", icon: Plane },
   { href: "/flights", label: "Flights", icon: PlaneTakeoff },
   { href: "/flight-logs", label: "Flight logs", icon: ScrollText },
+  { href: "/maintenance", label: "Maintenance", icon: Wrench },
+  { href: "/work-orders", label: "Work orders", icon: ClipboardList },
 ];
 
 export function isActive(pathname: string, href: string): boolean {

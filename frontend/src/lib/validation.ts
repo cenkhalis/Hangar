@@ -66,11 +66,15 @@ export function toApiDateTime(localValue: string): string {
   return new Date(localValue).toISOString();
 }
 
-/** Convert a date to a datetime-local value in the browser's zone (minute precision). */
-export function toLocalInputValue(date: Date): string {
+/**
+ * Convert a date to a datetime-local value in the browser's zone, to the minute or, for inputs
+ * with `step={1}`, to the second.
+ */
+export function toLocalInputValue(date: Date, { seconds = false } = {}): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return (
     `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
-    `T${pad(date.getHours())}:${pad(date.getMinutes())}`
+    `T${pad(date.getHours())}:${pad(date.getMinutes())}` +
+    (seconds ? `:${pad(date.getSeconds())}` : "")
   );
 }

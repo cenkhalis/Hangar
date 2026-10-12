@@ -105,3 +105,11 @@ describe("datetime conversion", () => {
     expect(toApiDateTime(local)).toMatch(/Z$/);
   });
 });
+
+describe("toLocalInputValue with seconds", () => {
+  it("adds seconds for second-precision inputs", () => {
+    expect(toLocalInputValue(new Date(2026, 9, 12, 8, 14, 5), { seconds: true })).toBe(
+      "2026-10-12T08:14:05",
+    );
+  });
+});

@@ -47,3 +47,24 @@ export function localDateString(date: Date = new Date()): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
+
+export type UsageUnit = "flight_hours" | "cycles" | "calendar_days";
+
+const plural = (n: number, one: string, many: string) => (Math.abs(n) === 1 ? one : many);
+
+/** A usage amount in the unit of a life limit or inspection interval. */
+export function formatUsage(unit: string, value: string | number): string {
+  const n = Number(value);
+  if (unit === "flight_hours") return formatHours(value);
+  if (unit === "cycles") return `${formatNumber(n, 0)} ${plural(n, "cycle", "cycles")}`;
+  if (unit === "calendar_days") return `${formatNumber(n, 0)} ${plural(n, "day", "days")}`;
+  return formatNumber(value);
+}
+
+/** Remaining usage before a limit; zero or less is past due. */
+export function formatRemaining(unit: string, remaining: string | number): string {
+  const n = Number(remaining);
+  if (n === 0) return "Due now";
+  if (n < 0) return `${formatUsage(unit, Math.abs(n))} over`;
+  return `${formatUsage(unit, n)} left`;
+}

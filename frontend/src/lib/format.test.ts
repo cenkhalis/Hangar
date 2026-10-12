@@ -7,6 +7,8 @@ import {
   formatHours,
   formatNumber,
   formatRelativeDays,
+  formatRemaining,
+  formatUsage,
   localDateString,
 } from "./format";
 
@@ -53,5 +55,26 @@ describe("formatters", () => {
 
   it("localDateString uses the local calendar date", () => {
     expect(localDateString(new Date(2026, 0, 5, 23, 59))).toBe("2026-01-05");
+  });
+});
+
+describe("usage formatters", () => {
+  it.each([
+    ["flight_hours", "12.50", "12.5 h"],
+    ["cycles", "1", "1 cycle"],
+    ["cycles", "1500", "1,500 cycles"],
+    ["calendar_days", "30.00", "30 days"],
+    ["calendar_days", "1", "1 day"],
+  ])("formatUsage(%s, %s) = %s", (unit, value, expected) => {
+    expect(formatUsage(unit, value)).toBe(expected);
+  });
+
+  it.each([
+    ["flight_hours", "12.50", "12.5 h left"],
+    ["calendar_days", "0.00", "Due now"],
+    ["cycles", "-3", "3 cycles over"],
+    ["calendar_days", "-1", "1 day over"],
+  ])("formatRemaining(%s, %s) = %s", (unit, value, expected) => {
+    expect(formatRemaining(unit, value)).toBe(expected);
   });
 });

@@ -15,7 +15,7 @@ function Stat({ label, children }: { label: string; children: ReactNode }) {
     <Card size="sm">
       <CardHeader>
         <CardDescription>{label}</CardDescription>
-        <CardTitle className="text-xl">{children}</CardTitle>
+        <CardTitle className="text-xl group-data-[size=sm]/card:text-xl">{children}</CardTitle>
       </CardHeader>
     </Card>
   );

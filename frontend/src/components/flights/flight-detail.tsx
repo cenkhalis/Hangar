@@ -9,6 +9,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFlight } from "@/hooks/use-flights";
+import { cn } from "@/lib/utils";
 import {
   formatCoordinates,
   formatDateTime,
@@ -24,7 +25,7 @@ function Metric({ label, value, detail }: { label: string; value: ReactNode; det
     <Card size="sm">
       <CardHeader>
         <CardDescription>{label}</CardDescription>
-        <CardTitle className="text-xl">{value}</CardTitle>
+        <CardTitle className="text-xl group-data-[size=sm]/card:text-xl">{value}</CardTitle>
         {detail && <p className="text-xs text-muted-foreground">{detail}</p>}
       </CardHeader>
     </Card>
@@ -54,7 +55,7 @@ export function FlightDetail({ id }: { id: number }) {
         actions={
           <Link
             href={`/flight-logs/${f.log}`}
-            className={buttonVariants({ variant: "outline", size: "sm" })}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
           >
             View source log
           </Link>

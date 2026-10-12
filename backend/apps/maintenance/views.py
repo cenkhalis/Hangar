@@ -66,7 +66,7 @@ class WorkOrderViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = WorkOrder.objects.prefetch_related(
+    queryset = WorkOrder.objects.select_related("aircraft").prefetch_related(
         Prefetch("items", queryset=WorkOrderItem.objects.select_related("task", "completion"))
     )
     serializer_class = WorkOrderSerializer
@@ -107,6 +107,7 @@ class WorkOrderItemViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             performed_by=data["performed_by"],
             notes=data["notes"],
         )
+        completion = TaskCompletion.objects.select_related("aircraft", "task").get(pk=completion.pk)
         return Response(TaskCompletionSerializer(completion).data)
 
 
@@ -118,7 +119,7 @@ class TaskCompletionViewSet(
 ):
     """Sign-off history. POST records a historical completion; others come from work orders."""
 
-    queryset = TaskCompletion.objects.select_related("work_order_item")
+    queryset = TaskCompletion.objects.select_related("work_order_item", "aircraft", "task")
     serializer_class = TaskCompletionSerializer
     filterset_class = TaskCompletionFilter
 

@@ -45,7 +45,7 @@ class AircraftModelViewSet(viewsets.ModelViewSet):
 
 
 class AircraftViewSet(NoDestroyModelViewSet):
-    queryset = Aircraft.objects.all()
+    queryset = Aircraft.objects.select_related("model")
     serializer_class = AircraftSerializer
     filterset_fields = ["status", "model"]
 

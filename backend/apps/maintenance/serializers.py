@@ -72,11 +72,12 @@ class MaintenanceProgramSerializer(serializers.ModelSerializer):
 
 class WorkOrderItemSerializer(serializers.ModelSerializer):
     task_code = serializers.CharField(source="task.code", read_only=True)
+    task_title = serializers.CharField(source="task.title", read_only=True)
     completion = serializers.SerializerMethodField()
 
     class Meta:
         model = WorkOrderItem
-        fields = ["id", "work_order", "task", "task_code", "status", "completion"]
+        fields = ["id", "work_order", "task", "task_code", "task_title", "status", "completion"]
 
     @extend_schema_field(serializers.IntegerField(allow_null=True))
     def get_completion(self, obj):
@@ -85,6 +86,7 @@ class WorkOrderItemSerializer(serializers.ModelSerializer):
 
 
 class WorkOrderSerializer(serializers.ModelSerializer):
+    aircraft_serial = serializers.CharField(source="aircraft.serial_number", read_only=True)
     items = WorkOrderItemSerializer(many=True, read_only=True)
 
     class Meta:
@@ -92,6 +94,7 @@ class WorkOrderSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "aircraft",
+            "aircraft_serial",
             "title",
             "notes",
             "status",
@@ -127,6 +130,9 @@ class SignOffSerializer(serializers.Serializer):
 
 
 class TaskCompletionSerializer(serializers.ModelSerializer):
+    aircraft_serial = serializers.CharField(source="aircraft.serial_number", read_only=True)
+    task_code = serializers.CharField(source="task.code", read_only=True)
+    task_title = serializers.CharField(source="task.title", read_only=True)
     voided = serializers.SerializerMethodField()
     work_order = serializers.IntegerField(
         source="work_order_item.work_order_id", read_only=True, default=None
@@ -137,7 +143,10 @@ class TaskCompletionSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "aircraft",
+            "aircraft_serial",
             "task",
+            "task_code",
+            "task_title",
             "kind",
             "work_order_item",
             "work_order",

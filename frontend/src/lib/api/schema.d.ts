@@ -624,6 +624,7 @@ export interface components {
         Aircraft: {
             readonly id: number;
             model: number;
+            readonly model_name: string;
             serial_number: string;
             registration: string;
             status: components["schemas"]["AircraftStatusEnum"];
@@ -1341,7 +1342,10 @@ export interface components {
         TaskCompletion: {
             readonly id: number;
             readonly aircraft: number;
+            readonly aircraft_serial: string;
             readonly task: number;
+            readonly task_code: string;
+            readonly task_title: string;
             readonly kind: components["schemas"]["KindEnum"];
             readonly work_order_item: number | null;
             readonly work_order: number;
@@ -1374,6 +1378,7 @@ export interface components {
         WorkOrder: {
             readonly id: number;
             readonly aircraft: number;
+            readonly aircraft_serial: string;
             title: string;
             notes: string;
             readonly status: components["schemas"]["WorkOrderStatusEnum"];
@@ -1398,6 +1403,7 @@ export interface components {
             work_order: number;
             task: number;
             readonly task_code: string;
+            readonly task_title: string;
             status: components["schemas"]["WorkOrderItemStatusEnum"];
             readonly completion: number | null;
         };

@@ -51,11 +51,14 @@ class AircraftModelSerializer(serializers.ModelSerializer):
 
 
 class AircraftSerializer(UsageCountersMixin, serializers.ModelSerializer):
+    model_name = serializers.CharField(source="model.__str__", read_only=True)
+
     class Meta:
         model = Aircraft
         fields = [
             "id",
             "model",
+            "model_name",
             "serial_number",
             "registration",
             "status",

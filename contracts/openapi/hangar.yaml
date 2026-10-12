@@ -2149,6 +2149,9 @@ components:
           readOnly: true
         model:
           type: integer
+        model_name:
+          type: string
+          readOnly: true
         serial_number:
           type: string
           maxLength: 100
@@ -2174,6 +2177,7 @@ components:
       - id
       - in_service_date
       - model
+      - model_name
       - registration
       - serial_number
       - status
@@ -3743,8 +3747,17 @@ components:
         aircraft:
           type: integer
           readOnly: true
+        aircraft_serial:
+          type: string
+          readOnly: true
         task:
           type: integer
+          readOnly: true
+        task_code:
+          type: string
+          readOnly: true
+        task_title:
+          type: string
           readOnly: true
         kind:
           allOf:
@@ -3784,6 +3797,7 @@ components:
           readOnly: true
       required:
       - aircraft
+      - aircraft_serial
       - created_at
       - id
       - kind
@@ -3791,6 +3805,8 @@ components:
       - performed_at
       - performed_by
       - task
+      - task_code
+      - task_title
       - void_reason
       - voided
       - voided_at
@@ -3841,6 +3857,9 @@ components:
         aircraft:
           type: integer
           readOnly: true
+        aircraft_serial:
+          type: string
+          readOnly: true
         title:
           type: string
           maxLength: 200
@@ -3869,6 +3888,7 @@ components:
           readOnly: true
       required:
       - aircraft
+      - aircraft_serial
       - cancel_reason
       - closed_at
       - id
@@ -3913,6 +3933,9 @@ components:
         task_code:
           type: string
           readOnly: true
+        task_title:
+          type: string
+          readOnly: true
         status:
           $ref: '#/components/schemas/WorkOrderItemStatusEnum'
         completion:
@@ -3925,6 +3948,7 @@ components:
       - status
       - task
       - task_code
+      - task_title
       - work_order
     WorkOrderItemRequest:
       type: object

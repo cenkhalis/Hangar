@@ -4,6 +4,7 @@ import { Suspense } from "react";
 
 import { API_URL } from "@/lib/api/client";
 
+import { HealthChip } from "./health-chip";
 import { NavLinks, NavLinksFallback } from "./nav-links";
 
 export function Sidebar() {
@@ -14,6 +15,7 @@ export function Sidebar() {
           <Plane aria-hidden className="size-5" />
           HANGAR
         </Link>
+        <HealthChip className="shrink-0 md:order-1 md:px-3" />
         <nav aria-label="Main" className="md:flex-1">
           {/* usePathname suspends on routes with dynamic params when cacheComponents is on. */}
           <Suspense fallback={<NavLinksFallback />}>
@@ -24,7 +26,7 @@ export function Sidebar() {
           href={`${API_URL}/api/docs/`}
           target="_blank"
           rel="noreferrer"
-          className="hidden items-center gap-1 px-3 text-xs text-muted-foreground hover:text-foreground md:flex"
+          className="hidden items-center gap-1 px-3 text-xs text-muted-foreground hover:text-foreground md:order-2 md:flex"
         >
           API docs <ExternalLink aria-hidden className="size-3" />
         </a>

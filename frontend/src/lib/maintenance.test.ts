@@ -7,6 +7,7 @@ import {
   dueStateByAircraft,
   formatDuePoint,
   pendingTasks,
+  summarizeDue,
   worstDueState,
 } from "./maintenance";
 
@@ -108,5 +109,26 @@ describe("defaultTaskSelection", () => {
 
   it("selects the requested tasks instead, still skipping pending ones", () => {
     expect(defaultTaskSelection(tasks, pending, [3, 5, 99])).toEqual([3]);
+  });
+});
+
+describe("summarizeDue", () => {
+  it("counts states and affected aircraft and keeps the most urgent items in order", () => {
+    const items = [
+      dueItem({ aircraft: 1, task: 1, state: "overdue" }),
+      dueItem({ aircraft: 2, task: 2, state: "overdue" }),
+      dueItem({ aircraft: 1, task: 3, state: "due_soon" }),
+    ];
+
+    expect(summarizeDue(items, 2)).toEqual({
+      overdue: 2,
+      dueSoon: 1,
+      aircraft: 2,
+      urgent: items.slice(0, 2),
+    });
+  });
+
+  it("is all zeros when nothing is due", () => {
+    expect(summarizeDue([])).toEqual({ overdue: 0, dueSoon: 0, aircraft: 0, urgent: [] });
   });
 });

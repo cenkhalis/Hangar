@@ -84,3 +84,11 @@ export function signOffItem(itemId: number, body: SignOffRequest): Promise<TaskC
 export function getCompletion(id: number): Promise<TaskCompletion> {
   return unwrap(api.GET("/api/maintenance/completions/{id}/", { params: { path: { id } } }));
 }
+
+/** Work orders in a status, read from `count` of a one-row page. */
+export async function countWorkOrders(status: WorkOrderStatus): Promise<number> {
+  const page = await unwrap(
+    api.GET("/api/maintenance/work-orders/", { params: { query: { status, page_size: 1 } } }),
+  );
+  return page.count;
+}

@@ -1,6 +1,11 @@
-import type { AircraftFilters } from "@/lib/api/fleet";
-import type { FlightFilters, FlightLogFilters } from "@/lib/api/flights";
-import type { CompletionFilters, DueState, WorkOrderFilters } from "@/lib/api/maintenance";
+import type { AircraftFilters, AircraftStatus } from "@/lib/api/fleet";
+import type { FlightFilters, FlightLogFilters, FlightLogStatus } from "@/lib/api/flights";
+import type {
+  CompletionFilters,
+  DueState,
+  WorkOrderFilters,
+  WorkOrderStatus,
+} from "@/lib/api/maintenance";
 
 /**
  * Query key factories. Each domain module adds its keys here, so invalidation after a mutation can
@@ -13,6 +18,7 @@ export const queryKeys = {
     aircraftList: (filters: AircraftFilters) => ["fleet", "aircraft", "list", filters] as const,
     aircraft: (id: number) => ["fleet", "aircraft", id] as const,
     allAircraft: ["fleet", "aircraft", "all"] as const,
+    aircraftCount: (status: AircraftStatus) => ["fleet", "aircraft", "count", status] as const,
     airworthiness: (id: number) => ["fleet", "aircraft", id, "airworthiness"] as const,
     models: ["fleet", "models"] as const,
     componentTypes: ["fleet", "component-types"] as const,
@@ -23,6 +29,7 @@ export const queryKeys = {
     detail: (id: number) => ["flights", "detail", id] as const,
     logs: (filters: FlightLogFilters) => ["flights", "logs", "list", filters] as const,
     log: (id: number) => ["flights", "logs", id] as const,
+    logCount: (status: FlightLogStatus) => ["flights", "logs", "count", status] as const,
   },
   maintenance: {
     all: ["maintenance"] as const,
@@ -35,5 +42,7 @@ export const queryKeys = {
     workOrders: (filters: WorkOrderFilters) =>
       ["maintenance", "work-orders", "list", filters] as const,
     workOrder: (id: number) => ["maintenance", "work-orders", id] as const,
+    workOrderCount: (status: WorkOrderStatus) =>
+      ["maintenance", "work-orders", "count", status] as const,
   },
 };

@@ -40,3 +40,11 @@ export function listAllAircraft(): Promise<Aircraft[]> {
     unwrap(api.GET("/api/fleet/aircraft/", { params: { query: { page } } })),
   );
 }
+
+/** Aircraft in a status, read from `count` of a one-row page. */
+export async function countAircraft(status: AircraftStatus): Promise<number> {
+  const page = await unwrap(
+    api.GET("/api/fleet/aircraft/", { params: { query: { status, page_size: 1 } } }),
+  );
+  return page.count;
+}

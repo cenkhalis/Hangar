@@ -40,3 +40,11 @@ export function getFlightLog(id: number): Promise<FlightLog> {
 export function reprocessFlightLog(id: number): Promise<FlightLog> {
   return unwrap(api.POST("/api/flights/logs/{id}/reprocess/", { params: { path: { id } } }));
 }
+
+/** Flight logs in a status, read from `count` of a one-row page. */
+export async function countFlightLogs(status: FlightLogStatus): Promise<number> {
+  const page = await unwrap(
+    api.GET("/api/flights/logs/", { params: { query: { status, page_size: 1 } } }),
+  );
+  return page.count;
+}

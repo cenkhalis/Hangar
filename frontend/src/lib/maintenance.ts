@@ -75,3 +75,21 @@ export function defaultTaskSelection(
   }
   return available.filter((t) => ACTIONABLE_STATES.has(t.state)).map((t) => t.task);
 }
+
+export type DueSummary = {
+  overdue: number;
+  dueSoon: number;
+  /** Aircraft with at least one task due soon or overdue. */
+  aircraft: number;
+  /** The most severe items, in the API's severity order. */
+  urgent: DueItem[];
+};
+
+export function summarizeDue(items: DueItem[], urgentLimit = 5): DueSummary {
+  return {
+    overdue: items.filter((item) => item.state === "overdue").length,
+    dueSoon: items.filter((item) => item.state === "due_soon").length,
+    aircraft: new Set(items.map((item) => item.aircraft)).size,
+    urgent: items.slice(0, urgentLimit),
+  };
+}

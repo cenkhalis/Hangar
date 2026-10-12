@@ -68,3 +68,22 @@ export function formatRemaining(unit: string, remaining: string | number): strin
   if (n < 0) return `${formatUsage(unit, Math.abs(n))} over`;
   return `${formatUsage(unit, n)} left`;
 }
+
+export function formatDistance(meters: number): string {
+  return meters < 1000 ? `${formatNumber(meters, 0)} m` : `${formatNumber(meters / 1000, 1)} km`;
+}
+
+export function formatSpeed(metersPerSecond: number): string {
+  return `${formatNumber(metersPerSecond, 1)} m/s`;
+}
+
+export function formatPercent(value: number): string {
+  return `${formatNumber(value, 1)} %`;
+}
+
+/** Decimal degrees with hemisphere, e.g. "41.01510° N, 28.97950° E". */
+export function formatCoordinates(lat: number, lon: number): string {
+  const part = (value: number, positive: string, negative: string) =>
+    `${Math.abs(value).toFixed(5)}° ${value >= 0 ? positive : negative}`;
+  return `${part(lat, "N", "S")}, ${part(lon, "E", "W")}`;
+}

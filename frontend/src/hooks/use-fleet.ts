@@ -5,6 +5,7 @@ import {
   getAircraft,
   getAirworthiness,
   listAircraft,
+  listAllAircraft,
   listAllAircraftModels,
   listAllComponentTypes,
 } from "@/lib/api/fleet";
@@ -44,6 +45,14 @@ export function useComponentTypes() {
   return useQuery({
     queryKey: queryKeys.fleet.componentTypes,
     queryFn: listAllComponentTypes,
+    staleTime: REFERENCE_STALE_TIME,
+  });
+}
+
+export function useAllAircraft() {
+  return useQuery({
+    queryKey: queryKeys.fleet.allAircraft,
+    queryFn: listAllAircraft,
     staleTime: REFERENCE_STALE_TIME,
   });
 }

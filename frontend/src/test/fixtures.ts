@@ -78,3 +78,57 @@ export const dueItem = (overrides: Partial<Schemas["DueItem"]> = {}): Schemas["D
   intervals: [interval({ state: "due_soon" })],
   ...overrides,
 });
+
+export const flight = (overrides: Partial<Schemas["Flight"]> = {}): Schemas["Flight"] => ({
+  id: 9,
+  aircraft: 1,
+  aircraft_serial: "AC-00001",
+  log: 4,
+  departure_at: "2026-10-12T08:14:03Z",
+  arrival_at: "2026-10-12T08:41:57Z",
+  duration_seconds: 1674,
+  cycles: 1,
+  sample_count: 1674,
+  max_altitude_m: 118.4,
+  max_speed_mps: 17.2,
+  distance_m: 9213.7,
+  battery_start_pct: 98,
+  battery_end_pct: 31.5,
+  start_lat: 41.0151,
+  start_lon: 28.9795,
+  end_lat: 41.0149,
+  end_lon: 28.9801,
+  ...overrides,
+});
+
+export const flightLog = (
+  overrides: Partial<Schemas["FlightLog"]> = {},
+): Schemas["FlightLog"] => ({
+  id: 4,
+  log_id: "3f2b7c1e9a4d5f60718293a4b5c6d7e8f90112233445566778899aabbccddeef",
+  status: "processed",
+  rejection_code: "",
+  rejection_detail: "",
+  source_filename: "AC-00001_20261012T081403Z.csv",
+  source_format: "csv",
+  schema_version: "1",
+  stream_message_id: "1760256843000-0",
+  received_at: "2026-10-12T09:00:00Z",
+  processed_at: "2026-10-12T09:00:01Z",
+  duplicate_count: 0,
+  last_seen_at: "2026-10-12T09:00:00Z",
+  flight: 9,
+  payload: { log_id: "3f2b", aircraft_serial: "AC-00001" },
+  ...overrides,
+});
+
+export const rejectedLog = (overrides: Partial<Schemas["FlightLog"]> = {}) =>
+  flightLog({
+    id: 5,
+    status: "rejected",
+    rejection_code: "unknown_aircraft",
+    rejection_detail: "No aircraft with serial 'AC-00099'.",
+    source_filename: "AC-00099_20261012T100000Z.csv",
+    flight: null,
+    ...overrides,
+  });

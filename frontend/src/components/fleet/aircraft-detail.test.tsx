@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { aircraft, page } from "@/test/fixtures";
+import { aircraft, flight, page } from "@/test/fixtures";
 import { apiUrl, server } from "@/test/msw";
 import { renderWithProviders } from "@/test/render";
 
@@ -46,27 +46,6 @@ const airworthiness = {
 const componentTypes = page([
   { id: 2, part_number: "M-2207", name: "Motor", category: "motor", life_limits: [] },
 ]);
-
-const flight = {
-  id: 9,
-  aircraft: 1,
-  aircraft_serial: "AC-00001",
-  log: 4,
-  departure_at: "2026-10-12T08:14:03Z",
-  arrival_at: "2026-10-12T08:41:57Z",
-  duration_seconds: 1674,
-  cycles: 1,
-  sample_count: 1674,
-  max_altitude_m: 118.4,
-  max_speed_mps: 17.2,
-  distance_m: 9213.7,
-  battery_start_pct: 98,
-  battery_end_pct: 31.5,
-  start_lat: 41.0151,
-  start_lon: 28.9795,
-  end_lat: 41.0149,
-  end_lon: 28.9801,
-};
 
 describe("AircraftDetail", () => {
   beforeEach(() => {
@@ -118,7 +97,7 @@ describe("AircraftDetail", () => {
     server.use(
       http.get(apiUrl("/api/flights/flights/"), ({ request }) => {
         query = new URL(request.url).searchParams;
-        return HttpResponse.json(page([flight]));
+        return HttpResponse.json(page([flight()]));
       }),
     );
 

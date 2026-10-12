@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  formatCoordinates,
+  formatDistance,
+  formatPercent,
+  formatSpeed,
   formatDate,
   formatDateTime,
   formatDuration,
@@ -76,5 +80,25 @@ describe("usage formatters", () => {
     ["calendar_days", "-1", "1 day over"],
   ])("formatRemaining(%s, %s) = %s", (unit, value, expected) => {
     expect(formatRemaining(unit, value)).toBe(expected);
+  });
+});
+
+describe("telemetry formatters", () => {
+  it.each([
+    [850, "850 m"],
+    [9213.7, "9.2 km"],
+    [12000, "12 km"],
+  ])("formatDistance(%d) = %s", (meters, expected) => {
+    expect(formatDistance(meters)).toBe(expected);
+  });
+
+  it("formats speed and percentages", () => {
+    expect(formatSpeed(17.25)).toBe("17.3 m/s");
+    expect(formatPercent(66.5)).toBe("66.5 %");
+  });
+
+  it("formats coordinates with hemispheres", () => {
+    expect(formatCoordinates(41.0151, 28.9795)).toBe("41.01510° N, 28.97950° E");
+    expect(formatCoordinates(-33.8688, -70.6693)).toBe("33.86880° S, 70.66930° W");
   });
 });

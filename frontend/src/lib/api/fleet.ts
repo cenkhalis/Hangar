@@ -33,3 +33,10 @@ export function listAllComponentTypes(): Promise<ComponentType[]> {
     unwrap(api.GET("/api/fleet/component-types/", { params: { query: { page } } })),
   );
 }
+
+/** Every aircraft, for pickers; fleets here are small enough to load in full. */
+export function listAllAircraft(): Promise<Aircraft[]> {
+  return fetchAllPages((page) =>
+    unwrap(api.GET("/api/fleet/aircraft/", { params: { query: { page } } })),
+  );
+}

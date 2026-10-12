@@ -9,7 +9,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from enum import StrEnum
 
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Q
 
 from .exceptions import (
     AircraftRetired,
@@ -186,8 +186,14 @@ def get_aircraft_airworthiness(aircraft: Aircraft, *, today: datetime.date) -> A
 
 
 @transaction.atomic
-def record_aircraft_usage(aircraft: Aircraft, *, flight_seconds: int, cycles: int) -> Aircraft:
-    """Add usage to the aircraft and to every component currently installed on it."""
+def record_aircraft_usage(
+    aircraft: Aircraft, *, flight_seconds: int, cycles: int, flown_at: datetime.datetime
+) -> Aircraft:
+    """Add usage to the aircraft and to every component installed on it at ``flown_at``.
+
+    Attributing by flight time rather than by current installation keeps usage correct when
+    logs arrive late, after components have been swapped.
+    """
     if flight_seconds < 0 or cycles < 0:
         raise InvalidUsage("Usage values cannot be negative.")
     if flight_seconds == 0 and cycles == 0:
@@ -202,9 +208,11 @@ def record_aircraft_usage(aircraft: Aircraft, *, flight_seconds: int, cycles: in
         "cycles": F("cycles") + cycles,
     }
     Aircraft.objects.filter(pk=locked.pk).update(**increments)
-    installed_ids = ComponentInstallation.objects.filter(
-        aircraft=locked, removed_at__isnull=True
-    ).values("component_id")
+    installed_ids = (
+        ComponentInstallation.objects.filter(aircraft=locked, installed_at__lte=flown_at)
+        .filter(Q(removed_at__isnull=True) | Q(removed_at__gt=flown_at))
+        .values("component_id")
+    )
     Component.objects.filter(pk__in=installed_ids).update(**increments)
 
     aircraft.refresh_from_db(fields=["flight_seconds", "cycles"])

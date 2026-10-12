@@ -135,7 +135,9 @@ class TestAircraft:
         ComponentLifeLimitFactory(component_type=component_type, value=Decimal("100"))
         component = ComponentFactory(component_type=component_type)
         services.install_component(component, aircraft, at=installed_at(), position="motor-1")
-        services.record_aircraft_usage(aircraft, flight_seconds=100 * 3600, cycles=1)
+        services.record_aircraft_usage(
+            aircraft, flight_seconds=100 * 3600, cycles=1, flown_at=timezone.now()
+        )
 
         response = api.get(f"{BASE}/aircraft/{aircraft.pk}/airworthiness/")
 

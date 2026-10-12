@@ -33,7 +33,12 @@ class FlightSerializer(serializers.ModelSerializer):
 
 
 class FlightLogSerializer(serializers.ModelSerializer):
-    flight = serializers.PrimaryKeyRelatedField(read_only=True)
+    # Declared explicitly: DRF drops allow_blank/allow_null from read_only_fields, which would
+    # leave the schema claiming processed logs have a rejection code and rejected logs a flight.
+    rejection_code = serializers.ChoiceField(
+        choices=FlightLog.RejectionCode.choices, allow_blank=True, read_only=True
+    )
+    flight = serializers.PrimaryKeyRelatedField(read_only=True, allow_null=True)
 
     class Meta:
         model = FlightLog

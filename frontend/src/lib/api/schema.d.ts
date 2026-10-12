@@ -676,6 +676,8 @@ export interface components {
             state: components["schemas"]["LifeStateEnum"];
             components: components["schemas"]["InstalledComponentStatus"][];
         };
+        /** @enum {unknown} */
+        BlankEnum: "";
         /** @description Initial usage may be set on create; afterwards counters change only through services. */
         Component: {
             readonly id: number;
@@ -826,7 +828,7 @@ export interface components {
             readonly id: number;
             readonly log_id: string;
             readonly status: components["schemas"]["FlightLogStatusEnum"];
-            readonly rejection_code: components["schemas"]["RejectionCodeEnum"];
+            readonly rejection_code: components["schemas"]["RejectionCodeEnum"] | components["schemas"]["BlankEnum"];
             readonly rejection_detail: string;
             readonly source_filename: string;
             readonly source_format: string;
@@ -839,7 +841,7 @@ export interface components {
             readonly duplicate_count: number;
             /** Format: date-time */
             readonly last_seen_at: string;
-            readonly flight: number;
+            readonly flight: number | null;
             readonly payload: unknown;
         };
         /**

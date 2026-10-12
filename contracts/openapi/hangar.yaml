@@ -2282,6 +2282,9 @@ components:
       - airworthy
       - components
       - state
+    BlankEnum:
+      enum:
+      - ''
     Component:
       type: object
       description: Initial usage may be set on create; afterwards counters change
@@ -2666,9 +2669,10 @@ components:
           - $ref: '#/components/schemas/FlightLogStatusEnum'
           readOnly: true
         rejection_code:
-          allOf:
-          - $ref: '#/components/schemas/RejectionCodeEnum'
           readOnly: true
+          oneOf:
+          - $ref: '#/components/schemas/RejectionCodeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         rejection_detail:
           type: string
           readOnly: true
@@ -2703,6 +2707,7 @@ components:
         flight:
           type: integer
           readOnly: true
+          nullable: true
         payload:
           readOnly: true
       required:

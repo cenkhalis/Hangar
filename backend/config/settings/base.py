@@ -20,11 +20,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",
     "rest_framework",
     "corsheaders",
     "django_filters",
     "apps.core",
     "apps.fleet",
+    "apps.flights",
 ]
 
 MIDDLEWARE = [
@@ -93,5 +95,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 50,
     "EXCEPTION_HANDLER": "apps.core.exceptions.exception_handler",
 }
+
+REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])

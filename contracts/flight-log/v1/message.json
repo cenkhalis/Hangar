@@ -1,0 +1,22 @@
+{
+  "log_id": "3f2b7c1e9a4d5f60718293a4b5c6d7e8f90112233445566778899aabbccddeef",
+  "aircraft_serial": "AC-00042",
+  "departure_at": "2026-10-12T08:14:03Z",
+  "arrival_at": "2026-10-12T08:41:57Z",
+  "cycles": 1,
+  "telemetry": {
+    "sample_count": 1674,
+    "max_altitude_m": 118.4,
+    "max_speed_mps": 17.2,
+    "distance_m": 9213.7,
+    "battery_start_pct": 98,
+    "battery_end_pct": 31.5,
+    "start": {"lat": 41.0151, "lon": 28.9795},
+    "end": {"lat": 41.0149, "lon": 28.9801}
+  },
+  "source": {
+    "filename": "AC-00042_20261012T081403Z.csv",
+    "format": "csv",
+    "ingested_at": "2026-10-12T09:00:00Z"
+  }
+}

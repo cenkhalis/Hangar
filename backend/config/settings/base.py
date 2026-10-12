@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.fleet",
     "apps.flights",
+    "apps.maintenance",
 ]
 
 MIDDLEWARE = [
